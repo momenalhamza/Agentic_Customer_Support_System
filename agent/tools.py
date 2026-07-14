@@ -47,9 +47,15 @@ def _load_orders() -> list:
         return json.load(f)
 
 
+def _normalize_order_id(order_id: str) -> str:
+    """So "1002", "ord-1002", and "ORD-1002" all match the same order."""
+    return order_id.strip().upper().removeprefix("ORD-").lstrip("-")
+
+
 def _find_order(order_id: str) -> Optional[dict]:
+    target = _normalize_order_id(order_id)
     for order in _load_orders():
-        if order["order_id"] == order_id:
+        if _normalize_order_id(order["order_id"]) == target:
             return order
     return None
 
@@ -59,6 +65,7 @@ def cancel_order(order_id: str) -> CancelResult:
     if order is None:
         return CancelResult(outcome="not_found", order_id=order_id, message=f"No order found with ID {order_id}.")
 
+    order_id = order["order_id"]
     status = order["status"]
 
     if status == "cancelled":
@@ -119,6 +126,7 @@ def track_order(order_id: str) -> TrackResult:
     if order is None:
         return TrackResult(outcome="not_found", order_id=order_id, message=f"No order found with ID {order_id}.")
 
+    order_id = order["order_id"]
     status = order["status"]
 
     if status == "delivered":
