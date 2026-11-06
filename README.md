@@ -1,6 +1,6 @@
 # Agentic Customer Support Assistant
  
-> AI.SPIRE Capstone Project — Group 1, Team 2
+> AI.SPIRE Capstone Project 
  
 ---
  
@@ -128,19 +128,7 @@ See **[SETUP.md](SETUP.md)** for the full step-by-step guide, and
 Docker-only startup, ingestion internals, and the test suite.
  
 ---
- 
-## Team & Contact
- 
-| Name | Role |
-|------|------|
-| Bashar Albdour | Team Lead |
-| Momen Alhamza | Team Member |
-| Lana Al-Safadi | Team Member |
-| Jumana Melhem | Team Member |
- 
-**Contact:** [bashar.albdour@outlook.com](mailto:bashar.albdour@outlook.com)
- 
----
+
  
 ## License
  
