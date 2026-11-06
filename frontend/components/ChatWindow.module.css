@@ -20,6 +20,11 @@
   background: var(--surface-raised);
 }
 
+.headerText {
+  flex: 1;
+  min-width: 0;
+}
+
 .headerAvatar {
   display: flex;
   align-items: center;
@@ -128,8 +133,48 @@
   justify-content: flex-start;
 }
 
-.bubble {
+/* Phase B: RTL messages mirror which side of the screen they sit on, same
+   convention as any RTL chat UI — the customer's own message stays visually
+   distinct from the agent's, just mirrored left-to-right. */
+.bubbleRowRtlUser {
+  justify-content: flex-start;
+}
+
+.bubbleRowRtlAssistant {
+  justify-content: flex-end;
+}
+
+.bubbleColumn {
+  display: flex;
+  flex-direction: column;
   max-width: 82%;
+}
+
+.bubbleColumnUser {
+  align-items: flex-end;
+}
+
+.bubbleColumnAssistant {
+  align-items: flex-start;
+}
+
+.bubbleColumnRtlUser {
+  align-items: flex-start;
+}
+
+.bubbleColumnRtlAssistant {
+  align-items: flex-end;
+}
+
+.timestamp {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+.bubble {
+  max-width: 100%;
   padding: 11px 15px;
   border-radius: 16px;
   font-size: 14.5px;
@@ -162,20 +207,165 @@
   border-color: var(--escalate-border);
 }
 
+.bubbleRtl {
+  text-align: right;
+}
+
+/* Mirror the speech-bubble "tail" corner to the opposite side for RTL text,
+   same convention as .bubbleUser/.bubbleAssistant's own tail corners above. */
+.bubbleUser.bubbleRtl {
+  border-bottom-right-radius: 16px;
+  border-bottom-left-radius: 4px;
+}
+
+.bubbleAssistant.bubbleRtl,
+.bubbleError.bubbleRtl {
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 4px;
+}
+
+.bubbleRoute_information {
+  border-left: 3px solid var(--badge-info-fg);
+}
+
+.bubbleRoute_action {
+  border-left: 3px solid var(--badge-action-fg);
+}
+
+.bubbleRoute_escalate {
+  border-left: 3px solid var(--badge-escalate-fg);
+}
+
 .bubbleText {
   margin: 0;
 }
 
-.escalationNotice {
+.retryButton {
+  margin-top: 8px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--error-border);
+  background: transparent;
+  color: var(--error-fg);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.retryButton:hover {
+  background: var(--error-border);
+}
+
+.bubbleFooter {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.footerActions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.feedbackButtons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 10px;
+}
+
+.feedbackButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.feedbackButton:hover {
+  background: var(--border);
+  opacity: 1;
+}
+
+.feedbackButtonActive {
+  background: var(--border);
+  opacity: 1;
+}
+
+.copyButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin-top: 10px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.copyButton:hover {
+  background: var(--border);
+  color: var(--foreground);
+}
+
+.escalationNotice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   font-size: 12.5px;
   font-weight: 600;
   color: var(--escalate-fg);
   margin-bottom: 8px;
   padding-bottom: 8px;
   border-bottom: 1px dashed var(--escalate-border);
+}
+
+.escalationNoticeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.escalationPickedUp {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--badge-action-fg);
+}
+
+.bubbleHumanAgent {
+  border-color: var(--accent);
+}
+
+.humanAgentLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--accent-ring);
 }
 
 .badgeRow {
@@ -278,6 +468,131 @@
 
 .input:disabled {
   opacity: 0.6;
+}
+
+.voiceError {
+  padding: 0 18px 8px;
+  font-size: 12px;
+  color: var(--error-fg);
+}
+
+.micButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.micButton:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.micButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.micButtonActive {
+  border-color: var(--error-border);
+  background: var(--error-bg);
+  animation: mic-pulse 1.4s infinite ease-in-out;
+}
+
+@keyframes mic-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--error-border);
+  }
+  50% {
+    box-shadow: 0 0 0 5px transparent;
+  }
+}
+
+.hiddenFileInput {
+  display: none;
+}
+
+.attachButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 16px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.attachButton:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.attachButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.attachmentChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 18px 8px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  width: fit-content;
+}
+
+.attachmentThumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.attachmentChipLabel {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.attachmentRemoveButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.attachmentRemoveButton:hover {
+  background: var(--border);
+  color: var(--foreground);
+}
+
+.messageAttachmentImage {
+  display: block;
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  object-fit: cover;
 }
 
 .sendButton {

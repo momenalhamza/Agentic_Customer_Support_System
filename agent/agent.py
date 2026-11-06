@@ -61,7 +61,9 @@ from agent.delivery_dispute import detect_delivery_dispute
 from agent.generator import generate_answer
 from agent.groundedness import is_grounded
 from agent.intent_classifier import ACTION_INTENTS, classify_intent_and_slots
+from agent.language import detect_language
 from agent.smalltalk import classify_smalltalk
+from agent.translation import translate_to_english
 from app.config import MIN_ESCALATION_BM25_FLOOR, MIN_ESCALATION_DENSE_FLOOR, MIN_INTENT_CONFIDENCE
 from app.schemas import AgentResponse, SessionState
 
@@ -70,13 +72,39 @@ _REQUIRED_SLOT_BY_INTENT = {
     "track_order": "order_id",
 }
 
+# Phase B (Arabic support, see ANALYSIS.md's Phase B entry): every piece of
+# customer-facing copy this module owns directly (as opposed to
+# LLM-generated text, handled in agent/generator.py) gets a hardcoded
+# Arabic variant, keyed the same way as _REPLY_BY_CATEGORY in
+# agent/smalltalk.py — a fixed, bounded set, not a live translation call.
 _CLARIFY_QUESTIONS = {
-    "order_id": "Before I can help with that, could you share your order number?",
+    "en": {"order_id": "Before I can help with that, could you share your order number?"},
+    "ar": {"order_id": "قبل أن أتمكن من مساعدتك في ذلك، هل يمكنك مشاركة رقم طلبك؟"},
 }
 
-_CLARIFICATION_QUESTION = "Sorry, I didn't quite catch that — could you tell me a bit more about what you're trying to do?"
+_GENERIC_SLOT_QUESTION = {
+    "en": "Could you share your {slot}?",
+    "ar": "هل يمكنك مشاركة {slot}؟",
+}
 
-_CONTACT_QUESTION = "Before they reach out, could you share your email or order number so they can follow up directly?"
+_CLARIFICATION_QUESTION = {
+    "en": "Sorry, I didn't quite catch that — could you tell me a bit more about what you're trying to do?",
+    "ar": "عذرًا، لم أفهم ذلك تمامًا — هل يمكنك إخباري بمزيد من التفاصيل عمّا تحاول القيام به؟",
+}
+
+_CONTACT_QUESTION = {
+    "en": "Before they reach out, could you share your email or order number so they can follow up directly?",
+    "ar": "قبل أن يتواصلوا معك، هل يمكنك مشاركة بريدك الإلكتروني أو رقم طلبك حتى يتمكنوا من المتابعة مباشرة؟",
+}
+
+_DEFAULT_ESCALATION_ACK = {
+    "en": "I've connected you with a member of our team who can help with this. ",
+    "ar": "لقد قمت بتوصيلك بأحد أعضاء فريقنا الذي يمكنه مساعدتك في هذا الأمر. ",
+}
+
+
+def _pick(language: str, en: str, ar: str) -> str:
+    return ar if language == "ar" else en
 
 
 class Agent:
@@ -88,7 +116,7 @@ class Agent:
         self.escalation = escalation
         self.tools = tools_module
 
-    def handle_message(self, query: str, session_id: str) -> AgentResponse:
+    def handle_message(self, query: str, session_id: str, attachment_id: str = None) -> AgentResponse:
         state = self.session_store.get_state(session_id)
         smalltalk = classify_smalltalk(query)
         if smalltalk is not None:
@@ -115,7 +143,17 @@ class Agent:
                     session_id=session_id,
                 )
 
-        retrieval_result = self.retriever.retrieve(query)
+        # Phase B (Arabic support): bge-large-en-v1.5 (bge-small-en-v1.5 in
+        # the cloud deployment) is English-only and retrieves poorly
+        # against an Arabic query embedded as-is (see ANALYSIS.md's Phase B
+        # entry for the evidence — wrong-topic chunks, dense/BM25 scores
+        # both below the escalation floors, for queries that are perfectly
+        # answerable once translated). `retrieval_query` is used ONLY for
+        # retrieval; the customer's own `query` and the final answer's
+        # language are untouched by this.
+        language = detect_language(query)
+        retrieval_query = translate_to_english(self.llm, query) if language == "ar" else query
+        retrieval_result = self.retriever.retrieve(retrieval_query)
         # Always re-classify the new message first, regardless of pending
         # state — §8's named failure mode is forcing a parse onto a message
         # that's actually the customer changing the subject.
@@ -123,32 +161,32 @@ class Agent:
         next_turn_count = state.turn_count + 1
 
         if state.pending == "awaiting_slot":
-            return self._resolve_pending_slot(query, session_id, state, intent_result, retrieval_result, next_turn_count)
+            return self._resolve_pending_slot(query, retrieval_query, session_id, state, intent_result, retrieval_result, next_turn_count, language, attachment_id)
         if state.pending == "awaiting_clarification":
-            return self._resolve_pending_clarification(query, session_id, state, intent_result, retrieval_result, next_turn_count)
+            return self._resolve_pending_clarification(query, retrieval_query, session_id, state, intent_result, retrieval_result, next_turn_count, language, attachment_id)
         if state.pending == "awaiting_contact":
-            return self._resolve_pending_contact(query, session_id, state, intent_result, next_turn_count)
+            return self._resolve_pending_contact(query, session_id, state, intent_result, next_turn_count, language)
 
-        return self._route(query, session_id, intent_result, retrieval_result, next_turn_count, state.last_order_context)
+        return self._route(query, retrieval_query, session_id, intent_result, retrieval_result, next_turn_count, state.last_order_context, language, attachment_id)
 
     # ------------------------------------------------------------------
     # Pending-state resolution
     # ------------------------------------------------------------------
 
-    def _resolve_pending_slot(self, query, session_id, state, intent_result, retrieval_result, turn_count) -> AgentResponse:
+    def _resolve_pending_slot(self, query, retrieval_query, session_id, state, intent_result, retrieval_result, turn_count, language, attachment_id=None) -> AgentResponse:
         original_intent = state.pending_context.get("original_intent")
 
         if intent_result.intent != original_intent and intent_result.intent_confidence >= MIN_INTENT_CONFIDENCE:
             # Clearly a different, high-confidence intent — drop the pending
             # question and treat this as a brand-new query instead of
             # force-parsing it as an answer to what we just asked.
-            return self._route(query, session_id, intent_result, retrieval_result, turn_count, state.last_order_context)
+            return self._route(query, retrieval_query, session_id, intent_result, retrieval_result, turn_count, state.last_order_context, language, attachment_id)
 
         merged_slots = {**state.pending_context.get("partial_slots", {}), **intent_result.slots}
         required_slot = _REQUIRED_SLOT_BY_INTENT.get(original_intent)
 
         if required_slot and merged_slots.get(required_slot):
-            return self._do_action(original_intent, merged_slots, session_id, retrieval_result, turn_count)
+            return self._do_action(original_intent, merged_slots, session_id, retrieval_result, turn_count, language)
 
         # The one allowed clarify attempt is used up (we already asked once
         # to reach this pending state) — escalate rather than ask again.
@@ -161,14 +199,16 @@ class Agent:
             attempted_summary=(
                 f"Customer wanted to {intent}; asked once for their order number; still not provided."
             ),
+            language=language,
+            attachment_id=attachment_id,
         )
 
-    def _resolve_pending_clarification(self, query, session_id, state, intent_result, retrieval_result, turn_count) -> AgentResponse:
+    def _resolve_pending_clarification(self, query, retrieval_query, session_id, state, intent_result, retrieval_result, turn_count, language, attachment_id=None) -> AgentResponse:
         reason = self._low_confidence_reason(intent_result, retrieval_result)
         if reason is None:
             # The clarifying reply resolved it — proceed exactly like a
             # fresh, confident turn (may answer, act, or ask for a slot).
-            return self._route_confident(query, session_id, intent_result, retrieval_result, turn_count, state.last_order_context)
+            return self._route_confident(query, retrieval_query, session_id, intent_result, retrieval_result, turn_count, state.last_order_context, language, attachment_id)
 
         # The one clarify attempt is used up — escalate for real this time.
         # Uses the ORIGINAL query (what the customer actually opened with),
@@ -186,9 +226,11 @@ class Agent:
                 self._describe_low_confidence(intent_result, reason)
                 + f' Asked one clarifying question; customer replied "{query}", which was still unclear.'
             ),
+            language=language,
+            attachment_id=attachment_id,
         )
 
-    def _resolve_pending_contact(self, query, session_id, state, intent_result, turn_count) -> AgentResponse:
+    def _resolve_pending_contact(self, query, session_id, state, intent_result, turn_count, language) -> AgentResponse:
         ctx = state.pending_context
         # The customer was explicitly asked for "email or order number," so
         # an order_id IS acceptable here (unlike the passive check used
@@ -200,6 +242,9 @@ class Agent:
             or self.escalation.check_known_contact({}, query)
         )
         # The one contact-ask attempt is used up either way — finalize now.
+        # `attachment_id` (Phase D) is whatever was captured on the ORIGINAL
+        # triggering turn (stored in pending_context by `_begin_escalation`),
+        # not this contact-providing reply turn.
         packet = self.escalation.finalize(
             query=ctx["original_query"],
             session_id=session_id,
@@ -208,6 +253,7 @@ class Agent:
             slots=ctx["slots"],
             attempted_summary=ctx["attempted_summary"],
             explicit_contact=explicit_contact,
+            attachment_id=ctx.get("attachment_id"),
         )
         self._save_state(session_id, pending=None, pending_context={}, turn_count=turn_count)
         return AgentResponse(
@@ -215,7 +261,7 @@ class Agent:
             intent=ctx["intent"],
             intent_confidence=ctx["intent_confidence"],
             retrieval_confidence=ctx["retrieval_confidence"],
-            detail=self._build_escalation_detail(ctx.get("escalation_kind"), ctx["slots"], packet.contact_captured),
+            detail=self._build_escalation_detail(ctx.get("escalation_kind"), ctx["slots"], packet.contact_captured, language),
             escalation_id=packet.escalation_id,
             session_id=session_id,
         )
@@ -247,7 +293,7 @@ class Agent:
             return f"Classified as intent '{intent_result.intent}' (confidence {intent_result.intent_confidence:.0%})."
         return "Retrieval found no clearly relevant policy content for this request."
 
-    def _route(self, query, session_id, intent_result, retrieval_result, turn_count, remembered_order=None) -> AgentResponse:
+    def _route(self, query, retrieval_query, session_id, intent_result, retrieval_result, turn_count, remembered_order, language, attachment_id=None) -> AgentResponse:
         reason = self._low_confidence_reason(intent_result, retrieval_result)
         if reason is not None:
             # M9: ask ONE human-worded clarifying question before ever
@@ -264,13 +310,13 @@ class Agent:
                 intent=intent_result.intent,
                 intent_confidence=intent_result.intent_confidence,
                 retrieval_confidence=retrieval_result.top_dense_score,
-                detail=_CLARIFICATION_QUESTION,
+                detail=_CLARIFICATION_QUESTION[language],
                 escalation_id=None,
                 session_id=session_id,
             )
-        return self._route_confident(query, session_id, intent_result, retrieval_result, turn_count, remembered_order)
+        return self._route_confident(query, retrieval_query, session_id, intent_result, retrieval_result, turn_count, remembered_order, language, attachment_id)
 
-    def _route_confident(self, query, session_id, intent_result, retrieval_result, turn_count, remembered_order=None) -> AgentResponse:
+    def _route_confident(self, query, retrieval_query, session_id, intent_result, retrieval_result, turn_count, remembered_order, language, attachment_id=None) -> AgentResponse:
         """The original routing body for a request already known to be
         clear enough to act on — reached either directly (fresh turn,
         passed `_low_confidence_reason`) or after a clarifying reply
@@ -301,37 +347,52 @@ class Agent:
                     and detect_delivery_dispute(query)
                 ):
                     return self._begin_delivery_dispute_escalation(
-                        slots[required_slot], query, session_id, retrieval_result, turn_count
+                        slots[required_slot], query, session_id, retrieval_result, turn_count, language, attachment_id
                     )
                 return self._do_action(
-                    intent_result.intent, slots, session_id, retrieval_result, turn_count,
-                    filled_from_memory=filled_from_memory,
+                    intent_result.intent, slots, session_id, retrieval_result, turn_count, language,
+                    filled_from_memory=filled_from_memory, attachment_id=attachment_id,
                 )
-            return self._ask_for_slot(session_id, intent_result, required_slot, retrieval_result, turn_count)
+            return self._ask_for_slot(session_id, intent_result, required_slot, retrieval_result, turn_count, language)
 
-        return self._answer_information(query, session_id, intent_result, retrieval_result, turn_count)
+        return self._answer_information(query, retrieval_query, session_id, intent_result, retrieval_result, turn_count, language, attachment_id)
 
     # ------------------------------------------------------------------
     # Branch (a): information
     # ------------------------------------------------------------------
 
-    def _answer_information(self, query, session_id, intent_result, retrieval_result, turn_count) -> AgentResponse:
-        answer = generate_answer(self.llm, query, retrieval_result.chunks)
+    def _answer_information(self, query, retrieval_query, session_id, intent_result, retrieval_result, turn_count, language, attachment_id=None) -> AgentResponse:
+        answer = generate_answer(self.llm, query, retrieval_result.chunks, language=language)
         # M13: reuse the vectors Weaviate already computed at ingestion
         # instead of re-embedding retrieved chunk text on every request —
         # see agent/groundedness.py's docstring and ANALYSIS.md's M13 entry.
+        #
+        # Phase B: the embedder is the same English-only bge model as
+        # retrieval — embedding an Arabic `answer` directly against English
+        # reference vectors reintroduces the exact cross-lingual problem
+        # Phase B's investigation found at the retrieval step, just on the
+        # output side (a genuinely well-grounded Arabic answer would still
+        # fail this check and wrongly escalate — found via this phase's
+        # end-to-end verification, see ANALYSIS.md's Phase B entry). Grounds
+        # against an English back-translation of the answer instead; the
+        # hard retry cap and the threshold itself are untouched.
+        grounding_text = translate_to_english(self.llm, answer) if language == "ar" else answer
         grounded, _ = is_grounded(
-            self.embedder, answer, [c.text for c in retrieval_result.chunks],
+            self.embedder, grounding_text, [c.text for c in retrieval_result.chunks],
             reference_vectors=[c.vector for c in retrieval_result.chunks],
         )
 
         if not grounded:
             # Hard-capped at exactly one retry — written as one more direct
             # call, not a loop, so there is no way to configure more.
-            retrieval_result = self.retriever.broaden_via_graph(query, retrieval_result.chunks)
-            answer = generate_answer(self.llm, query, retrieval_result.chunks)
+            # Phase B: broadens using `retrieval_query` (English, translated
+            # if the customer wrote Arabic), same reasoning as the initial
+            # retrieve() call above it.
+            retrieval_result = self.retriever.broaden_via_graph(retrieval_query, retrieval_result.chunks)
+            answer = generate_answer(self.llm, query, retrieval_result.chunks, language=language)
+            grounding_text = translate_to_english(self.llm, answer) if language == "ar" else answer
             grounded, _ = is_grounded(
-                self.embedder, answer, [c.text for c in retrieval_result.chunks],
+                self.embedder, grounding_text, [c.text for c in retrieval_result.chunks],
                 reference_vectors=[c.vector for c in retrieval_result.chunks],
             )
 
@@ -346,6 +407,8 @@ class Agent:
                     "(including a broadened search) but couldn't generate an answer actually "
                     "supported by it."
                 ),
+                language=language,
+                attachment_id=attachment_id,
             )
 
         self._save_state(session_id, pending=None, pending_context={}, turn_count=turn_count)
@@ -363,12 +426,12 @@ class Agent:
     # Branch (b) / (b2): action
     # ------------------------------------------------------------------
 
-    def _do_action(self, intent, slots, session_id, retrieval_result, turn_count, filled_from_memory=False) -> AgentResponse:
+    def _do_action(self, intent, slots, session_id, retrieval_result, turn_count, language, filled_from_memory=False, attachment_id=None) -> AgentResponse:
         order_id = slots.get("order_id")
         if intent == "cancel_order":
-            result = self.tools.cancel_order(order_id)
+            result = self.tools.cancel_order(order_id, language=language)
         elif intent == "track_order":
-            result = self.tools.track_order(order_id)
+            result = self.tools.track_order(order_id, language=language)
         else:
             raise ValueError(f"_do_action called with a non-action intent: {intent}")
 
@@ -378,6 +441,8 @@ class Agent:
                 retrieved_context=[], slots=slots, intent=intent, intent_confidence=1.0,
                 retrieval_confidence=retrieval_result.top_dense_score, turn_count=turn_count,
                 attempted_summary=f"Customer requested to {intent} order {order_id}, but no matching order was found.",
+                language=language,
+                attachment_id=attachment_id,
             )
 
         # M11: remembered for exactly one follow-up turn (see app/schemas.py
@@ -398,7 +463,8 @@ class Agent:
             # silently reused from the order just discussed. Say so, since
             # the trigger for this branch is often literally "what is my
             # order number?" (see ANALYSIS.md's M11 entry).
-            message = f"Your order number is {order_id}. " + message
+            prefix = _pick(language, f"Your order number is {order_id}. ", f"رقم طلبك هو {order_id}. ")
+            message = prefix + message
         return AgentResponse(
             route="action",
             intent=intent,
@@ -409,14 +475,14 @@ class Agent:
             session_id=session_id,
         )
 
-    def _ask_for_slot(self, session_id, intent_result, required_slot, retrieval_result, turn_count) -> AgentResponse:
+    def _ask_for_slot(self, session_id, intent_result, required_slot, retrieval_result, turn_count, language) -> AgentResponse:
         self._save_state(
             session_id,
             pending="awaiting_slot",
             pending_context={"original_intent": intent_result.intent, "partial_slots": intent_result.slots},
             turn_count=turn_count,
         )
-        question = _CLARIFY_QUESTIONS.get(required_slot, f"Could you share your {required_slot}?")
+        question = _CLARIFY_QUESTIONS[language].get(required_slot, _GENERIC_SLOT_QUESTION[language].format(slot=required_slot))
         return AgentResponse(
             route="action",
             intent=intent_result.intent,
@@ -433,7 +499,8 @@ class Agent:
 
     def _begin_escalation(
         self, query, session_id, reason, retrieved_context, slots, intent, intent_confidence,
-        retrieval_confidence, turn_count, attempted_summary, pending_detail=None, escalation_kind=None,
+        retrieval_confidence, turn_count, attempted_summary, language, pending_detail=None, escalation_kind=None,
+        attachment_id=None,
     ) -> AgentResponse:
         """Decides whether contact is already known (finalize immediately)
         or a real one-shot round-trip is needed first (M9) — the escalation
@@ -446,13 +513,19 @@ class Agent:
         second escalation mechanism — `escalation_kind` is a plain string
         stashed in `pending_context` (JSON-serializable, same pattern as
         every other value already stored there) so `_resolve_pending_contact`
-        can build the matching final reply too."""
+        can build the matching final reply too.
+
+        Phase D: `attachment_id`, when the round-trip is needed, is stashed
+        in `pending_context` the same way — so if contact resolves on a
+        LATER turn, `_resolve_pending_contact` still forwards the image
+        from the ORIGINAL triggering turn, not whatever (if anything) the
+        contact-providing reply itself attached."""
         known_contact = self.escalation.check_known_contact(slots, query)
         if known_contact:
             return self._finalize_escalation(
                 query, session_id, reason, retrieved_context, slots, intent, intent_confidence,
-                retrieval_confidence, turn_count, attempted_summary, explicit_contact=known_contact,
-                escalation_kind=escalation_kind,
+                retrieval_confidence, turn_count, attempted_summary, language, explicit_contact=known_contact,
+                escalation_kind=escalation_kind, attachment_id=attachment_id,
             )
 
         self._save_state(
@@ -468,6 +541,7 @@ class Agent:
                 "retrieval_confidence": retrieval_confidence,
                 "attempted_summary": attempted_summary,
                 "escalation_kind": escalation_kind,
+                "attachment_id": attachment_id,
             },
             turn_count=turn_count,
         )
@@ -476,18 +550,20 @@ class Agent:
             intent=intent,
             intent_confidence=intent_confidence,
             retrieval_confidence=retrieval_confidence,
-            detail=pending_detail or ("I've connected you with a member of our team who can help with this. " + _CONTACT_QUESTION),
+            detail=pending_detail or (_DEFAULT_ESCALATION_ACK[language] + _CONTACT_QUESTION[language]),
             escalation_id=None,  # not created yet — no packet, no Slack post until contact resolves
             session_id=session_id,
         )
 
     def _finalize_escalation(
         self, query, session_id, reason, retrieved_context, slots, intent, intent_confidence,
-        retrieval_confidence, turn_count, attempted_summary, explicit_contact=None, escalation_kind=None,
+        retrieval_confidence, turn_count, attempted_summary, language, explicit_contact=None, escalation_kind=None,
+        attachment_id=None,
     ) -> AgentResponse:
         packet = self.escalation.finalize(
             query=query, session_id=session_id, reason=reason, retrieved_context=retrieved_context,
             slots=slots, attempted_summary=attempted_summary, explicit_contact=explicit_contact,
+            attachment_id=attachment_id,
         )
         self._save_state(session_id, pending=None, pending_context={}, turn_count=turn_count)
         return AgentResponse(
@@ -495,20 +571,28 @@ class Agent:
             intent=intent,
             intent_confidence=intent_confidence,
             retrieval_confidence=retrieval_confidence,
-            detail=self._build_escalation_detail(escalation_kind, slots, packet.contact_captured),
+            detail=self._build_escalation_detail(escalation_kind, slots, packet.contact_captured, language),
             escalation_id=packet.escalation_id,
             session_id=session_id,
         )
 
-    def _build_escalation_detail(self, escalation_kind, slots, contact_captured: bool) -> str:
+    def _build_escalation_detail(self, escalation_kind, slots, contact_captured: bool, language: str) -> str:
         if escalation_kind == "delivery_dispute":
-            return self._delivery_dispute_escalation_detail(slots.get("order_id"), contact_captured)
-        return self._escalation_detail(contact_captured)
+            return self._delivery_dispute_escalation_detail(slots.get("order_id"), contact_captured, language)
+        return self._escalation_detail(contact_captured, language)
 
-    def _escalation_detail(self, contact_captured: bool) -> str:
+    def _escalation_detail(self, contact_captured: bool, language: str) -> str:
         if contact_captured:
-            return "I've connected you with a member of our team who can help with this. They'll follow up using the contact info you shared."
-        return "I've connected you with a member of our team who can help with this. They'll do their best to follow up if you reach out again."
+            return _pick(
+                language,
+                "I've connected you with a member of our team who can help with this. They'll follow up using the contact info you shared.",
+                "لقد قمت بتوصيلك بأحد أعضاء فريقنا الذي يمكنه مساعدتك في هذا الأمر. سيتابعون معك باستخدام معلومات التواصل التي شاركتها.",
+            )
+        return _pick(
+            language,
+            "I've connected you with a member of our team who can help with this. They'll do their best to follow up if you reach out again.",
+            "لقد قمت بتوصيلك بأحد أعضاء فريقنا الذي يمكنه مساعدتك في هذا الأمر. سيبذلون قصارى جهدهم للمتابعة إذا تواصلت معنا مرة أخرى.",
+        )
 
     # ------------------------------------------------------------------
     # Delivery dispute (M11) — a dedicated ESCALATE cause, reusing every
@@ -516,7 +600,7 @@ class Agent:
     # summary) with only the customer-facing copy specialized.
     # ------------------------------------------------------------------
 
-    def _begin_delivery_dispute_escalation(self, order_id, query, session_id, retrieval_result, turn_count) -> AgentResponse:
+    def _begin_delivery_dispute_escalation(self, order_id, query, session_id, retrieval_result, turn_count, language, attachment_id=None) -> AgentResponse:
         return self._begin_escalation(
             query, session_id, reason="delivery_dispute_after_tracking",
             retrieved_context=[], slots={"order_id": order_id},
@@ -528,23 +612,35 @@ class Agent:
                 "physical receipt — needs a team member to investigate the actual delivery, not a "
                 "policy question."
             ),
-            pending_detail=(
+            language=language,
+            attachment_id=attachment_id,
+            pending_detail=_pick(
+                language,
                 f"I'm sorry to hear that — I understand order {order_id} shows as delivered on our end, "
                 "but that's clearly not right if it hasn't reached you. I've flagged this for a team "
-                "member to look into the actual delivery. " + _CONTACT_QUESTION
+                "member to look into the actual delivery. " + _CONTACT_QUESTION["en"],
+                f"يؤسفني سماع ذلك — أفهم أن الطلب {order_id} يظهر لدينا على أنه تم توصيله، لكن من الواضح "
+                "أن هذا غير صحيح إذا لم يصلك. لقد قمت بتمييز هذا الأمر ليتحقق أحد أعضاء الفريق من عملية "
+                "التوصيل الفعلية. " + _CONTACT_QUESTION["ar"],
             ),
             escalation_kind="delivery_dispute",
         )
 
-    def _delivery_dispute_escalation_detail(self, order_id, contact_captured: bool) -> str:
+    def _delivery_dispute_escalation_detail(self, order_id, contact_captured: bool, language: str) -> str:
         if contact_captured:
-            return (
+            return _pick(
+                language,
                 f"Thanks — I've passed this along to our team with your contact info. They'll look "
-                f"into exactly what happened with order {order_id}'s delivery and follow up directly."
+                f"into exactly what happened with order {order_id}'s delivery and follow up directly.",
+                f"شكرًا — لقد أحلت هذا الأمر إلى فريقنا مع معلومات التواصل الخاصة بك. سيتحققون بالضبط "
+                f"مما حدث في عملية توصيل الطلب {order_id} وسيتابعون معك مباشرة.",
             )
-        return (
+        return _pick(
+            language,
             f"I've flagged order {order_id}'s delivery for our team to investigate. They'll do their "
-            "best to follow up if you reach out again."
+            "best to follow up if you reach out again.",
+            f"لقد قمت بتمييز عملية توصيل الطلب {order_id} ليقوم فريقنا بالتحقيق فيها. سيبذلون قصارى "
+            "جهدهم للمتابعة إذا تواصلت معنا مرة أخرى.",
         )
 
     # ------------------------------------------------------------------

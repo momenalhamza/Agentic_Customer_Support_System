@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import ChatWindow from "@/components/ChatWindow";
 import { getOrCreateSessionId } from "@/lib/session";
 import styles from "./page.module.css";
@@ -20,6 +21,9 @@ export default function Home() {
   return (
     <div className={styles.page}>
       {sessionId ? <ChatWindow sessionId={sessionId} /> : <p className={styles.loadingShell}>Loading…</p>}
+      <Link href="/admin" className={styles.adminLink}>
+        Admin
+      </Link>
     </div>
   );
 }

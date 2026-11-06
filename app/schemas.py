@@ -13,6 +13,11 @@ from pydantic import BaseModel
 class ChatRequest(BaseModel):
     query: str
     session_id: str
+    # Phase D: set only when the customer attached an image to THIS turn
+    # (see agent/attachments.py's docstring) — never read by the text
+    # routing/retrieval/generation pipeline, only passed through to an
+    # escalation packet if this turn happens to escalate.
+    attachment_id: Optional[str] = None
 
 
 class SessionState(BaseModel):
@@ -64,6 +69,105 @@ class EscalationPacket(BaseModel):
     # asked and what the reply was, etc.) — replaces a bare reason enum
     # in the Slack notification. See ANALYSIS.md's M9 entry.
     attempted_summary: str = ""
+    # Phase D: set only when the customer attached an image on the turn
+    # that triggered this escalation — a relative URL path the frontend/
+    # Slack can resolve via GET /attachments/{id}. Never analyzed by the
+    # LLM, only forwarded for a human to look at.
+    attachment_id: Optional[str] = None
+    # Phase D (live human handoff, see ANALYSIS.md's Phase D entry):
+    # "waiting" until a human acts on it via the admin dashboard's
+    # POST /escalations/{id}/respond, updated to "picked_up"/"responded".
+    # Slack itself stays one-way (unchanged) — this is what actually closes
+    # the loop back to the customer.
+    human_status: Literal["waiting", "picked_up", "responded"] = "waiting"
+    human_reply: Optional[str] = None
+    responded_at: Optional[str] = None
+
+
+class FeedbackRequest(BaseModel):
+    session_id: str
+    query: str
+    response_text: str
+    route: Literal["information", "action", "escalate"]
+    intent: str
+    thumbs_up: bool
+
+
+class FeedbackEntry(BaseModel):
+    feedback_id: str
+    session_id: str
+    query: str
+    response_text: str
+    route: Literal["information", "action", "escalate"]
+    intent: str
+    thumbs_up: bool
+    timestamp: str
+
+
+class AttachmentUploadResponse(BaseModel):
+    attachment_id: str
+    url: str
+
+
+class MessageEntry(BaseModel):
+    message_id: str
+    session_id: str
+    # Phase D: null until the customer opts in via POST /conversations/identify
+    # (see agent/conversation_history.py's docstring) — an unverified email,
+    # by design (see ANALYSIS.md's Phase D entry for the tradeoff).
+    customer_email: Optional[str]
+    # Phase D (live human handoff): "human_agent" is a reply logged via
+    # POST /escalations/{id}/respond — visually distinguished from the
+    # bot's own "assistant" messages in the frontend, since a customer
+    # should always be able to tell whether they're talking to the AI or
+    # a person.
+    role: Literal["user", "assistant", "human_agent"]
+    text: str
+    route: Optional[Literal["information", "action", "escalate"]]
+    intent: Optional[str]
+    timestamp: str
+
+
+class IdentifySessionRequest(BaseModel):
+    session_id: str
+    email: str
+
+
+class RespondToEscalationRequest(BaseModel):
+    status: Literal["picked_up", "responded"]
+    reply: Optional[str] = None
+
+
+class EscalationStatus(BaseModel):
+    # Deliberately minimal — this is the customer-facing poll response, not
+    # the full EscalationPacket (no query/contact/retrieved_context): an
+    # anonymous poller who only knows their own escalation_id shouldn't get
+    # back more than their own status/reply.
+    escalation_id: str
+    human_status: Literal["waiting", "picked_up", "responded"]
+    human_reply: Optional[str] = None
+    responded_at: Optional[str] = None
+
+
+class IntentCount(BaseModel):
+    intent: str
+    count: int
+
+
+class HourlyCount(BaseModel):
+    hour: int  # 0-23, UTC
+    count: int
+
+
+class DropoffSummary(BaseModel):
+    single_turn_sessions: int
+    multi_turn_sessions: int
+
+
+class AnalyticsSummary(BaseModel):
+    top_intents: list[IntentCount]
+    hourly_volume: list[HourlyCount]
+    dropoff: DropoffSummary
 
 
 class HeldoutExample(BaseModel):

@@ -1,0 +1,2261 @@
+{
+  "primary_metric": "routing_accuracy",
+  "run_at": "2026-07-18T13:45:10.224085+00:00",
+  "n_examples": 60,
+  "seeds": [
+    42
+  ],
+  "summary": {
+    "agent": {
+      "routing_accuracy": {
+        "mean": 0.9333333333333333,
+        "std": 0.0,
+        "n_seeds": 1,
+        "values": [
+          0.9333333333333333
+        ]
+      },
+      "escalation_precision": {
+        "mean": 0.8333333333333334,
+        "std": 0.0,
+        "n_seeds": 1,
+        "values": [
+          0.8333333333333334
+        ]
+      },
+      "escalation_recall": {
+        "mean": 0.625,
+        "std": 0.0,
+        "n_seeds": 1,
+        "values": [
+          0.625
+        ]
+      },
+      "escalation_f1": {
+        "mean": 0.7142857142857143,
+        "std": 0.0,
+        "n_seeds": 1,
+        "values": [
+          0.7142857142857143
+        ]
+      },
+      "answer_attempt_groundedness": {
+        "mean": 1.0,
+        "std": 0.0,
+        "n_seeds": 1,
+        "values": [
+          1.0
+        ]
+      },
+      "groundedness_rate": {
+        "mean": 0.9148936170212766,
+        "std": 0.0,
+        "n_seeds": 1,
+        "values": [
+          0.9148936170212766
+        ]
+      },
+      "recall_at_k": {
+        "mean": 1.0,
+        "std": 0.0,
+        "n_seeds": 1,
+        "values": [
+          1.0
+        ]
+      },
+      "answer_match_rate": {
+        "mean": 0.851063829787234,
+        "std": 0.0,
+        "n_seeds": 1,
+        "values": [
+          0.851063829787234
+        ]
+      }
+    },
+    "baseline": {
+      "routing_accuracy": {
+        "mean": null,
+        "std": null,
+        "n_seeds": 0,
+        "values": []
+      },
+      "escalation_precision": {
+        "mean": null,
+        "std": null,
+        "n_seeds": 0,
+        "values": []
+      },
+      "escalation_recall": {
+        "mean": null,
+        "std": null,
+        "n_seeds": 0,
+        "values": []
+      },
+      "escalation_f1": {
+        "mean": null,
+        "std": null,
+        "n_seeds": 0,
+        "values": []
+      },
+      "answer_attempt_groundedness": {
+        "mean": null,
+        "std": null,
+        "n_seeds": 0,
+        "values": []
+      },
+      "groundedness_rate": {
+        "mean": null,
+        "std": null,
+        "n_seeds": 0,
+        "values": []
+      },
+      "recall_at_k": {
+        "mean": null,
+        "std": null,
+        "n_seeds": 0,
+        "values": []
+      },
+      "answer_match_rate": {
+        "mean": null,
+        "std": null,
+        "n_seeds": 0,
+        "values": []
+      }
+    }
+  },
+  "latency": {
+    "agent_first_turn": {
+      "p50": 14.851010089999363,
+      "p95": 24.210803104550358,
+      "max": 31.31484025300051,
+      "mean": 13.763177548466562,
+      "pct_under_target": 0.05,
+      "n": 60
+    },
+    "agent_full_conversation": {
+      "p50": 15.13534629699916,
+      "p95": 25.38280447944944,
+      "max": 31.31484025300051,
+      "mean": 15.32769535101658,
+      "pct_under_target": 0.05,
+      "n": 60
+    },
+    "baseline": null
+  },
+  "escalation_reasons": {
+    "still_unclear_after_clarification_low_intent_confidence": 2,
+    "order_not_found": 2,
+    "still_unclear_after_clarification_low_retrieval_relevance": 2
+  },
+  "success_criteria": [
+    {
+      "criterion": "C1  Routing accuracy >= 0.85",
+      "target": 0.85,
+      "observed": 0.9333333333333333,
+      "passed": true
+    },
+    {
+      "criterion": "C2  Groundedness >= 0.90",
+      "target": 0.9,
+      "observed": 1.0,
+      "passed": true
+    },
+    {
+      "criterion": "C3  Latency p95 < 3.0s (optional)",
+      "target": 3.0,
+      "observed": 24.210803104550358,
+      "passed": false
+    }
+  ],
+  "error_grid": {
+    "CANCEL|easy": {
+      "correct": 4,
+      "wrong": 0,
+      "n": 4,
+      "error_rate": 0.0
+    },
+    "CANCEL|medium": {
+      "correct": 4,
+      "wrong": 0,
+      "n": 4,
+      "error_rate": 0.0
+    },
+    "CANCEL|hard": {
+      "correct": 0,
+      "wrong": 1,
+      "n": 1,
+      "error_rate": 1.0
+    },
+    "SUBSCRIPTION|easy": {
+      "correct": 2,
+      "wrong": 0,
+      "n": 2,
+      "error_rate": 0.0
+    },
+    "SUBSCRIPTION|medium": {
+      "correct": 1,
+      "wrong": 0,
+      "n": 1,
+      "error_rate": 0.0
+    },
+    "SUBSCRIPTION|hard": {
+      "correct": 1,
+      "wrong": 1,
+      "n": 2,
+      "error_rate": 0.5
+    },
+    "ORDER|easy": {
+      "correct": 3,
+      "wrong": 0,
+      "n": 3,
+      "error_rate": 0.0
+    },
+    "ORDER|medium": {
+      "correct": 5,
+      "wrong": 0,
+      "n": 5,
+      "error_rate": 0.0
+    },
+    "DELIVERY|easy": {
+      "correct": 2,
+      "wrong": 0,
+      "n": 2,
+      "error_rate": 0.0
+    },
+    "DELIVERY|medium": {
+      "correct": 2,
+      "wrong": 0,
+      "n": 2,
+      "error_rate": 0.0
+    },
+    "REFUND|easy": {
+      "correct": 2,
+      "wrong": 0,
+      "n": 2,
+      "error_rate": 0.0
+    },
+    "REFUND|medium": {
+      "correct": 3,
+      "wrong": 0,
+      "n": 3,
+      "error_rate": 0.0
+    },
+    "PAYMENT|easy": {
+      "correct": 3,
+      "wrong": 0,
+      "n": 3,
+      "error_rate": 0.0
+    },
+    "PAYMENT|medium": {
+      "correct": 1,
+      "wrong": 0,
+      "n": 1,
+      "error_rate": 0.0
+    },
+    "ACCOUNT|easy": {
+      "correct": 1,
+      "wrong": 0,
+      "n": 1,
+      "error_rate": 0.0
+    },
+    "ACCOUNT|hard": {
+      "correct": 1,
+      "wrong": 0,
+      "n": 1,
+      "error_rate": 0.0
+    },
+    "ACCOUNT|medium": {
+      "correct": 2,
+      "wrong": 0,
+      "n": 2,
+      "error_rate": 0.0
+    },
+    "SHIPPING|easy": {
+      "correct": 2,
+      "wrong": 0,
+      "n": 2,
+      "error_rate": 0.0
+    },
+    "SHIPPING|medium": {
+      "correct": 2,
+      "wrong": 0,
+      "n": 2,
+      "error_rate": 0.0
+    },
+    "INVOICE|easy": {
+      "correct": 2,
+      "wrong": 0,
+      "n": 2,
+      "error_rate": 0.0
+    },
+    "INVOICE|medium": {
+      "correct": 1,
+      "wrong": 0,
+      "n": 1,
+      "error_rate": 0.0
+    },
+    "INVOICE|hard": {
+      "correct": 1,
+      "wrong": 0,
+      "n": 1,
+      "error_rate": 0.0
+    },
+    "CONTACT|easy": {
+      "correct": 3,
+      "wrong": 0,
+      "n": 3,
+      "error_rate": 0.0
+    },
+    "CONTACT|medium": {
+      "correct": 1,
+      "wrong": 0,
+      "n": 1,
+      "error_rate": 0.0
+    },
+    "FEEDBACK|easy": {
+      "correct": 3,
+      "wrong": 0,
+      "n": 3,
+      "error_rate": 0.0
+    },
+    "FEEDBACK|medium": {
+      "correct": 1,
+      "wrong": 0,
+      "n": 1,
+      "error_rate": 0.0
+    },
+    "ADVERSARIAL|hard": {
+      "correct": 2,
+      "wrong": 2,
+      "n": 4,
+      "error_rate": 0.5
+    },
+    "ADVERSARIAL|medium": {
+      "correct": 1,
+      "wrong": 0,
+      "n": 1,
+      "error_rate": 0.0
+    }
+  },
+  "per_seed": {
+    "42": {
+      "agent": [
+        {
+          "id": "hold-0001",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "According to the Cancellation Fee Policy, if you cancel your order after it has shipped but before delivery, a 10% restocking fee applies, deducted from your refund.",
+          "intent": "check_cancellation_fee",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.7290900349617004,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 0.8062505699999747,
+          "total_latency_s": 0.8062505699999747,
+          "metadata": {
+            "category": "CANCEL",
+            "difficulty": "easy",
+            "expected_source_file": "cancel.md"
+          },
+          "transcript": [
+            {
+              "sent": "How much is the fee if I cancel after my order has already shipped?",
+              "route": "information",
+              "detail": "According to the Cancellation Fee Policy, if you cancel your order after it has shipped but before delivery, a 10% restocking fee applies, deducted from your refund.",
+              "latency_s": 0.8062505699999747
+            }
+          ]
+        },
+        {
+          "id": "hold-0002",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "According to our Cancellation Fee Policy, if you cancel your order within 1 hour of placing the order, there is no cancellation fee.",
+          "intent": "check_cancellation_fee",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.7063427567481995,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 0.7855233079990285,
+          "total_latency_s": 0.7855233079990285,
+          "metadata": {
+            "category": "CANCEL",
+            "difficulty": "medium",
+            "expected_source_file": "cancel.md"
+          },
+          "transcript": [
+            {
+              "sent": "If I change my mind ten minutes after placing an order, do I get charged anything to cancel?",
+              "route": "information",
+              "detail": "According to our Cancellation Fee Policy, if you cancel your order within 1 hour of placing the order, there is no cancellation fee.",
+              "latency_s": 0.7855233079990285
+            }
+          ]
+        },
+        {
+          "id": "hold-0003",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "I'm unable to assist you with finding your order number as it's not mentioned in the provided policy excerpts.",
+          "intent": "contact_customer_service",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.6104627251625061,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 2,
+          "answer_grounded": true,
+          "grounded": false,
+          "recall_hit": true,
+          "answer_match": false,
+          "first_turn_latency_s": 0.4035509980003553,
+          "total_latency_s": 1.1582041490000847,
+          "metadata": {
+            "category": "CANCEL",
+            "difficulty": "medium",
+            "expected_source_file": "cancel.md"
+          },
+          "transcript": [
+            {
+              "sent": "Can I still cancel once the package has been delivered?",
+              "route": "action",
+              "detail": "Before I can help with that, could you share your order number?",
+              "latency_s": 0.4035509980003553
+            },
+            {
+              "sent": "I don't have the order number.",
+              "route": "information",
+              "detail": "I'm unable to assist you with finding your order number as it's not mentioned in the provided policy excerpts.",
+              "latency_s": 0.7546531509997294
+            }
+          ]
+        },
+        {
+          "id": "hold-0004",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To view the cancellation fee for a specific order, you can access My Orders in your account settings and select the order in question. The Cancel Order screen will show you the exact fee, if any, based on the order's current shipping status.",
+          "intent": "check_cancellation_fee",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.7901365756988525,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 18.112113852999755,
+          "total_latency_s": 18.112113852999755,
+          "metadata": {
+            "category": "CANCEL",
+            "difficulty": "easy",
+            "expected_source_file": "cancel.md"
+          },
+          "transcript": [
+            {
+              "sent": "Where in my account do I go to see the cancellation fee for a specific order?",
+              "route": "information",
+              "detail": "To view the cancellation fee for a specific order, you can access My Orders in your account settings and select the order in question. The Cancel Order screen will show you the exact fee, if any, based on the order's current shipping status.",
+              "latency_s": 18.112113852999755
+            }
+          ]
+        },
+        {
+          "id": "hold-0005",
+          "expected_route": "action",
+          "predicted_route": "action",
+          "detail": "Your order was placed within the last hour, so it's been cancelled for free with no fee.",
+          "intent": "cancel_order",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.68885338306427,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": null,
+          "grounded": null,
+          "recall_hit": null,
+          "answer_match": null,
+          "first_turn_latency_s": 7.540663818999747,
+          "total_latency_s": 7.540663818999747,
+          "metadata": {
+            "category": "CANCEL",
+            "difficulty": "easy",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "Please cancel order ORD-1001.",
+              "route": "action",
+              "detail": "Your order was placed within the last hour, so it's been cancelled for free with no fee.",
+              "latency_s": 7.540663818999747
+            }
+          ]
+        },
+        {
+          "id": "hold-0006",
+          "expected_route": "action",
+          "predicted_route": "action",
+          "detail": "This order has already shipped, so a 10% restocking fee of $12.00 applies, deducted from your refund.",
+          "intent": "cancel_order",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.57313072681427,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": null,
+          "grounded": null,
+          "recall_hit": null,
+          "answer_match": null,
+          "first_turn_latency_s": 7.508257561999926,
+          "total_latency_s": 7.508257561999926,
+          "metadata": {
+            "category": "CANCEL",
+            "difficulty": "medium",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "I want to cancel ORD-1003, what happens to my money?",
+              "route": "action",
+              "detail": "This order has already shipped, so a 10% restocking fee of $12.00 applies, deducted from your refund.",
+              "latency_s": 7.508257561999926
+            }
+          ]
+        },
+        {
+          "id": "hold-0007",
+          "expected_route": "action",
+          "predicted_route": "action",
+          "detail": "This order has already been cancelled.",
+          "intent": "cancel_order",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.587090015411377,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": null,
+          "grounded": null,
+          "recall_hit": null,
+          "answer_match": null,
+          "first_turn_latency_s": 7.441658748000918,
+          "total_latency_s": 7.441658748000918,
+          "metadata": {
+            "category": "CANCEL",
+            "difficulty": "medium",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "Cancel ORD-1005 for me please.",
+              "route": "action",
+              "detail": "This order has already been cancelled.",
+              "latency_s": 7.441658748000918
+            }
+          ]
+        },
+        {
+          "id": "hold-0008",
+          "expected_route": "action",
+          "predicted_route": "action",
+          "detail": "Your order hasn't shipped yet, so it's been cancelled for free. This will be processed within 1 business day.",
+          "intent": "cancel_order",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.5988470911979675,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": null,
+          "grounded": null,
+          "recall_hit": null,
+          "answer_match": null,
+          "first_turn_latency_s": 7.4870687530001305,
+          "total_latency_s": 7.4870687530001305,
+          "metadata": {
+            "category": "CANCEL",
+            "difficulty": "easy",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "I need to cancel ORD-1002 please.",
+              "route": "action",
+              "detail": "Your order hasn't shipped yet, so it's been cancelled for free. This will be processed within 1 business day.",
+              "latency_s": 7.4870687530001305
+            }
+          ]
+        },
+        {
+          "id": "hold-0009",
+          "expected_route": "escalate",
+          "predicted_route": "information",
+          "detail": "I'm unable to assist you with finding your order number as it's not mentioned in the provided policy excerpts.",
+          "intent": "contact_customer_service",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.6104627251625061,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 2,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": null,
+          "answer_match": false,
+          "first_turn_latency_s": 7.462944733000768,
+          "total_latency_s": 18.448491236000336,
+          "metadata": {
+            "category": "CANCEL",
+            "difficulty": "hard",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "I want to cancel my order.",
+              "route": "action",
+              "detail": "Before I can help with that, could you share your order number?",
+              "latency_s": 7.462944733000768
+            },
+            {
+              "sent": "I don't have the order number.",
+              "route": "information",
+              "detail": "I'm unable to assist you with finding your order number as it's not mentioned in the provided policy excerpts.",
+              "latency_s": 10.985546502999568
+            }
+          ]
+        },
+        {
+          "id": "hold-0010",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To unsubscribe from our newsletter, please provide me with the email address you used to subscribe, or if you have a specific account with us, let me know the account details.",
+          "intent": "newsletter_subscription",
+          "intent_confidence": 0.9,
+          "retrieval_confidence": 0.7670705318450928,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 14.844016234999799,
+          "total_latency_s": 14.844016234999799,
+          "metadata": {
+            "category": "SUBSCRIPTION",
+            "difficulty": "easy",
+            "expected_source_file": "subscription.md"
+          },
+          "transcript": [
+            {
+              "sent": "How do I unsubscribe from your newsletter?",
+              "route": "information",
+              "detail": "To unsubscribe from our newsletter, please provide me with the email address you used to subscribe, or if you have a specific account with us, let me know the account details.",
+              "latency_s": 14.844016234999799
+            }
+          ]
+        },
+        {
+          "id": "hold-0011",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To cancel your newsletter subscription, you will need to provide me with the email address you used to subscribe to our newsletter.",
+          "intent": "newsletter_subscription",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.7655860781669617,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 22.220028559999264,
+          "total_latency_s": 22.220028559999264,
+          "metadata": {
+            "category": "SUBSCRIPTION",
+            "difficulty": "medium",
+            "expected_source_file": "subscription.md"
+          },
+          "transcript": [
+            {
+              "sent": "What information do you need from me to cancel my newsletter subscription?",
+              "route": "information",
+              "detail": "To cancel your newsletter subscription, you will need to provide me with the email address you used to subscribe to our newsletter.",
+              "latency_s": 22.220028559999264
+            }
+          ]
+        },
+        {
+          "id": "hold-0012",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To get you signed up quickly, could you please provide me with your email address?",
+          "intent": "newsletter_subscription",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.6558088660240173,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 13.76295688800019,
+          "total_latency_s": 13.76295688800019,
+          "metadata": {
+            "category": "SUBSCRIPTION",
+            "difficulty": "easy",
+            "expected_source_file": "subscription.md"
+          },
+          "transcript": [
+            {
+              "sent": "I'd like to sign up for the newsletter.",
+              "route": "information",
+              "detail": "To get you signed up quickly, could you please provide me with your email address?",
+              "latency_s": 13.76295688800019
+            }
+          ]
+        },
+        {
+          "id": "hold-0013",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "Unfortunately, the provided policy excerpts do not offer a solution for finding an order number without knowing the invoice number or other identifying information.",
+          "intent": "contact_customer_service",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.6104627251625061,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 2,
+          "answer_grounded": true,
+          "grounded": false,
+          "recall_hit": true,
+          "answer_match": false,
+          "first_turn_latency_s": 14.72717925699908,
+          "total_latency_s": 25.71644180899966,
+          "metadata": {
+            "category": "SUBSCRIPTION",
+            "difficulty": "hard",
+            "expected_source_file": "subscription.md"
+          },
+          "transcript": [
+            {
+              "sent": "Will I stop getting emails immediately after I unsubscribe?",
+              "route": "action",
+              "detail": "Before I can help with that, could you share your order number?",
+              "latency_s": 14.72717925699908
+            },
+            {
+              "sent": "I don't have the order number.",
+              "route": "information",
+              "detail": "Unfortunately, the provided policy excerpts do not offer a solution for finding an order number without knowing the invoice number or other identifying information.",
+              "latency_s": 10.989262552000582
+            }
+          ]
+        },
+        {
+          "id": "hold-0014",
+          "expected_route": "information",
+          "predicted_route": "escalate",
+          "detail": "I've connected you with a member of our team who can help with this. Before they reach out, could you share your email or order number so they can follow up directly?",
+          "intent": "unknown",
+          "intent_confidence": 0.0,
+          "retrieval_confidence": 0.7103962898254395,
+          "escalation_id": null,
+          "reason": "still_unclear_after_clarification_low_intent_confidence",
+          "turns": 2,
+          "answer_grounded": null,
+          "grounded": null,
+          "recall_hit": true,
+          "answer_match": null,
+          "first_turn_latency_s": 14.858003944998927,
+          "total_latency_s": 30.62841699299861,
+          "metadata": {
+            "category": "SUBSCRIPTION",
+            "difficulty": "hard",
+            "expected_source_file": "subscription.md"
+          },
+          "transcript": [
+            {
+              "sent": "Can I unsubscribe without giving my email address?",
+              "route": "information",
+              "detail": "Sorry, I didn't quite catch that — could you tell me a bit more about what you're trying to do?",
+              "latency_s": 14.858003944998927
+            },
+            {
+              "sent": "Can I unsubscribe without giving my email address?",
+              "route": "escalate",
+              "detail": "I've connected you with a member of our team who can help with this. Before they reach out, could you share your email or order number so they can follow up directly?",
+              "latency_s": 15.770413047999682
+            }
+          ]
+        },
+        {
+          "id": "hold-0015",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "Unfortunately, the provided policy excerpts do not contain information on how to find your order number if you don't have it.",
+          "intent": "contact_customer_service",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.6104627251625061,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 2,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": false,
+          "first_turn_latency_s": 7.473929408999538,
+          "total_latency_s": 23.48370719900049,
+          "metadata": {
+            "category": "ORDER",
+            "difficulty": "easy",
+            "expected_source_file": "order.md"
+          },
+          "transcript": [
+            {
+              "sent": "How do I track where my order is right now?",
+              "route": "action",
+              "detail": "Before I can help with that, could you share your order number?",
+              "latency_s": 7.473929408999538
+            },
+            {
+              "sent": "I don't have the order number.",
+              "route": "information",
+              "detail": "Unfortunately, the provided policy excerpts do not contain information on how to find your order number if you don't have it.",
+              "latency_s": 16.009777790000953
+            }
+          ]
+        },
+        {
+          "id": "hold-0016",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "Unfortunately, the provided policy excerpts do not offer a solution for finding an order number without the invoice number.",
+          "intent": "contact_customer_service",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.6104627251625061,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 2,
+          "answer_grounded": true,
+          "grounded": false,
+          "recall_hit": true,
+          "answer_match": false,
+          "first_turn_latency_s": 7.4067519000000175,
+          "total_latency_s": 23.344826702999853,
+          "metadata": {
+            "category": "ORDER",
+            "difficulty": "easy",
+            "expected_source_file": "order.md"
+          },
+          "transcript": [
+            {
+              "sent": "What are the steps to cancel an order from my account portal?",
+              "route": "action",
+              "detail": "Before I can help with that, could you share your order number?",
+              "latency_s": 7.4067519000000175
+            },
+            {
+              "sent": "I don't have the order number.",
+              "route": "information",
+              "detail": "Unfortunately, the provided policy excerpts do not offer a solution for finding an order number without the invoice number.",
+              "latency_s": 15.938074802999836
+            }
+          ]
+        },
+        {
+          "id": "hold-0017",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To add another item to an existing order, please provide us with the details of the item you would like to add. This will allow us to promptly update your order and ensure that you are completely satisfied with it.",
+          "intent": "change_order",
+          "intent_confidence": 0.9,
+          "retrieval_confidence": 0.7049355506896973,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 14.08808298599979,
+          "total_latency_s": 14.08808298599979,
+          "metadata": {
+            "category": "ORDER",
+            "difficulty": "medium",
+            "expected_source_file": "order.md"
+          },
+          "transcript": [
+            {
+              "sent": "I want to add another item to an order I already placed.",
+              "route": "information",
+              "detail": "To add another item to an existing order, please provide us with the details of the item you would like to add. This will allow us to promptly update your order and ensure that you are completely satisfied with it.",
+              "latency_s": 14.08808298599979
+            }
+          ]
+        },
+        {
+          "id": "hold-0018",
+          "expected_route": "action",
+          "predicted_route": "action",
+          "detail": "This order is placed. Estimated delivery: 3-5 business days via standard shipping.",
+          "intent": "track_order",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.6011999845504761,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": null,
+          "grounded": null,
+          "recall_hit": null,
+          "answer_match": null,
+          "first_turn_latency_s": 7.4015008639999,
+          "total_latency_s": 7.4015008639999,
+          "metadata": {
+            "category": "ORDER",
+            "difficulty": "easy",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "Track order ORD-1002 for me.",
+              "route": "action",
+              "detail": "This order is placed. Estimated delivery: 3-5 business days via standard shipping.",
+              "latency_s": 7.4015008639999
+            }
+          ]
+        },
+        {
+          "id": "hold-0019",
+          "expected_route": "action",
+          "predicted_route": "action",
+          "detail": "This order is set for in-store pickup — it'll be ready for you to collect at your local store rather than shipped.",
+          "intent": "track_order",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.47498953342437744,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": null,
+          "grounded": null,
+          "recall_hit": null,
+          "answer_match": null,
+          "first_turn_latency_s": 7.39443708699946,
+          "total_latency_s": 7.39443708699946,
+          "metadata": {
+            "category": "ORDER",
+            "difficulty": "medium",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "What's the status of ORD-1006?",
+              "route": "action",
+              "detail": "This order is set for in-store pickup — it'll be ready for you to collect at your local store rather than shipped.",
+              "latency_s": 7.39443708699946
+            }
+          ]
+        },
+        {
+          "id": "hold-0020",
+          "expected_route": "action",
+          "predicted_route": "action",
+          "detail": "This order has already been delivered.",
+          "intent": "track_order",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.3904057741165161,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": null,
+          "grounded": null,
+          "recall_hit": null,
+          "answer_match": null,
+          "first_turn_latency_s": 7.463729364000756,
+          "total_latency_s": 7.463729364000756,
+          "metadata": {
+            "category": "ORDER",
+            "difficulty": "medium",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "Where is ORD-1004?",
+              "route": "action",
+              "detail": "This order has already been delivered.",
+              "latency_s": 7.463729364000756
+            }
+          ]
+        },
+        {
+          "id": "hold-0021",
+          "expected_route": "escalate",
+          "predicted_route": "escalate",
+          "detail": "I've connected you with a member of our team who can help with this. Before they reach out, could you share your email or order number so they can follow up directly?",
+          "intent": "track_order",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.5569927096366882,
+          "escalation_id": null,
+          "reason": "order_not_found",
+          "turns": 1,
+          "answer_grounded": null,
+          "grounded": null,
+          "recall_hit": null,
+          "answer_match": null,
+          "first_turn_latency_s": 7.470193365999876,
+          "total_latency_s": 7.470193365999876,
+          "metadata": {
+            "category": "ORDER",
+            "difficulty": "medium",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "Can you check ORD-9999 for me?",
+              "route": "escalate",
+              "detail": "I've connected you with a member of our team who can help with this. Before they reach out, could you share your email or order number so they can follow up directly?",
+              "latency_s": 7.470193365999876
+            }
+          ]
+        },
+        {
+          "id": "hold-0022",
+          "expected_route": "escalate",
+          "predicted_route": "escalate",
+          "detail": "I've connected you with a member of our team who can help with this. Before they reach out, could you share your email or order number so they can follow up directly?",
+          "intent": "cancel_order",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.6004173755645752,
+          "escalation_id": null,
+          "reason": "order_not_found",
+          "turns": 1,
+          "answer_grounded": null,
+          "grounded": null,
+          "recall_hit": null,
+          "answer_match": null,
+          "first_turn_latency_s": 7.4095500799994625,
+          "total_latency_s": 7.4095500799994625,
+          "metadata": {
+            "category": "ORDER",
+            "difficulty": "medium",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "Please cancel ORD-8888 immediately.",
+              "route": "escalate",
+              "detail": "I've connected you with a member of our team who can help with this. Before they reach out, could you share your email or order number so they can follow up directly?",
+              "latency_s": 7.4095500799994625
+            }
+          ]
+        },
+        {
+          "id": "hold-0023",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "According to our Delivery Time Policy, Standard Shipping typically takes 3–5 business days.",
+          "intent": "delivery_options",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.7110025882720947,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 16.838535426999442,
+          "total_latency_s": 16.838535426999442,
+          "metadata": {
+            "category": "DELIVERY",
+            "difficulty": "easy",
+            "expected_source_file": "delivery.md"
+          },
+          "transcript": [
+            {
+              "sent": "How long does standard shipping take?",
+              "route": "information",
+              "detail": "According to our Delivery Time Policy, Standard Shipping typically takes 3–5 business days.",
+              "latency_s": 16.838535426999442
+            }
+          ]
+        },
+        {
+          "id": "hold-0024",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "Our fastest shipping option is Overnight Shipping, which ensures next-day delivery.",
+          "intent": "delivery_options",
+          "intent_confidence": 0.9,
+          "retrieval_confidence": 0.6756844520568848,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 17.88296984599947,
+          "total_latency_s": 17.88296984599947,
+          "metadata": {
+            "category": "DELIVERY",
+            "difficulty": "easy",
+            "expected_source_file": "delivery.md"
+          },
+          "transcript": [
+            {
+              "sent": "What's the fastest shipping option you offer?",
+              "route": "information",
+              "detail": "Our fastest shipping option is Overnight Shipping, which ensures next-day delivery.",
+              "latency_s": 17.88296984599947
+            }
+          ]
+        },
+        {
+          "id": "hold-0025",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "Yes, we offer international shipping options.",
+          "intent": "delivery_options",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.654868483543396,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 15.937907229001212,
+          "total_latency_s": 15.937907229001212,
+          "metadata": {
+            "category": "DELIVERY",
+            "difficulty": "medium",
+            "expected_source_file": "delivery.md"
+          },
+          "transcript": [
+            {
+              "sent": "Do you ship internationally?",
+              "route": "information",
+              "detail": "Yes, we offer international shipping options.",
+              "latency_s": 15.937907229001212
+            }
+          ]
+        },
+        {
+          "id": "hold-0026",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "Yes, you can pick up your order in a store instead of having it shipped. According to our policy, we offer \"In-Store Pickup\" as one of our available delivery options.",
+          "intent": "change_shipping_address",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.6595135927200317,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 15.964363260998653,
+          "total_latency_s": 15.964363260998653,
+          "metadata": {
+            "category": "DELIVERY",
+            "difficulty": "medium",
+            "expected_source_file": "delivery.md"
+          },
+          "transcript": [
+            {
+              "sent": "Can I pick my order up in a store instead of having it shipped?",
+              "route": "information",
+              "detail": "Yes, you can pick up your order in a store instead of having it shipped. According to our policy, we offer \"In-Store Pickup\" as one of our available delivery options.",
+              "latency_s": 15.964363260998653
+            }
+          ]
+        },
+        {
+          "id": "hold-0027",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "According to the provided policy excerpts, you have 30 days from delivery to request a refund if you change your mind and decide to cancel your purchase.",
+          "intent": "check_refund_policy",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.7354958057403564,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 23.05812899599914,
+          "total_latency_s": 23.05812899599914,
+          "metadata": {
+            "category": "REFUND",
+            "difficulty": "easy",
+            "expected_source_file": "refund.md"
+          },
+          "transcript": [
+            {
+              "sent": "How long do I have to request a refund after delivery?",
+              "route": "information",
+              "detail": "According to the provided policy excerpts, you have 30 days from delivery to request a refund if you change your mind and decide to cancel your purchase.",
+              "latency_s": 23.05812899599914
+            }
+          ]
+        },
+        {
+          "id": "hold-0028",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "According to our refund policy, if you were accidentally charged multiple times for the same product or service, you may be eligible for a refund. This is listed under scenario 6: **Duplicate Charges**. Please provide me with your order number or any relevant details, and I'll be happy to assist you further.",
+          "intent": "get_refund",
+          "intent_confidence": 0.9,
+          "retrieval_confidence": 0.7009201049804688,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 24.211128603999896,
+          "total_latency_s": 24.211128603999896,
+          "metadata": {
+            "category": "REFUND",
+            "difficulty": "medium",
+            "expected_source_file": "refund.md"
+          },
+          "transcript": [
+            {
+              "sent": "I was charged twice for the same item, can I get a refund?",
+              "route": "information",
+              "detail": "According to our refund policy, if you were accidentally charged multiple times for the same product or service, you may be eligible for a refund. This is listed under scenario 6: **Duplicate Charges**. Please provide me with your order number or any relevant details, and I'll be happy to assist you further.",
+              "latency_s": 24.211128603999896
+            }
+          ]
+        },
+        {
+          "id": "hold-0029",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To request a refund, please gather the following information: \n\n- The date of the purchase\n- The method of payment used\n- Any relevant order or transaction numbers\n- Supporting documentation (if applicable)\n\nYou can then reach out to our customer support team either through our website or by calling 1-800-555-0199.",
+          "intent": "get_refund",
+          "intent_confidence": 0.9,
+          "retrieval_confidence": 0.76947420835495,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 19.281576260000293,
+          "total_latency_s": 19.281576260000293,
+          "metadata": {
+            "category": "REFUND",
+            "difficulty": "easy",
+            "expected_source_file": "refund.md"
+          },
+          "transcript": [
+            {
+              "sent": "What do I need to provide to request a refund?",
+              "route": "information",
+              "detail": "To request a refund, please gather the following information: \n\n- The date of the purchase\n- The method of payment used\n- Any relevant order or transaction numbers\n- Supporting documentation (if applicable)\n\nYou can then reach out to our customer support team either through our website or by calling 1-800-555-0199.",
+              "latency_s": 19.281576260000293
+            }
+          ]
+        },
+        {
+          "id": "hold-0030",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "Unfortunately, the provided policy excerpts do not contain information on how to check the status of a refund. They only mention checking the status, but do not provide any instructions or steps to do so.",
+          "intent": "get_refund",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.7880167365074158,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 19.377816617999997,
+          "total_latency_s": 19.377816617999997,
+          "metadata": {
+            "category": "REFUND",
+            "difficulty": "medium",
+            "expected_source_file": "refund.md"
+          },
+          "transcript": [
+            {
+              "sent": "How can I check the status of my refund?",
+              "route": "information",
+              "detail": "Unfortunately, the provided policy excerpts do not contain information on how to check the status of a refund. They only mention checking the status, but do not provide any instructions or steps to do so.",
+              "latency_s": 19.377816617999997
+            }
+          ]
+        },
+        {
+          "id": "hold-0031",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "According to the Refund Policy Overview, if your goods have not been delivered within the promised timeframe or if there are significant delays, you may be entitled to a refund.",
+          "intent": "get_refund",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.705714225769043,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 24.210785973000384,
+          "total_latency_s": 24.210785973000384,
+          "metadata": {
+            "category": "REFUND",
+            "difficulty": "medium",
+            "expected_source_file": "refund.md"
+          },
+          "transcript": [
+            {
+              "sent": "If my package never arrives, am I entitled to a refund?",
+              "route": "information",
+              "detail": "According to the Refund Policy Overview, if your goods have not been delivered within the promised timeframe or if there are significant delays, you may be entitled to a refund.",
+              "latency_s": 24.210785973000384
+            }
+          ]
+        },
+        {
+          "id": "hold-0032",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "We accept the following payment methods:\n\n- Credit/Debit Cards (Visa, Mastercard, American Express)\n- PayPal\n- Bank Transfers\n- Apple Pay\n- Google Pay\n\nYou can find a detailed list of accepted payment methods on our website by navigating to the \"Payment Methods\" section in the \"Account\" or \"Checkout\" page.",
+          "intent": "check_payment_methods",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.764086127281189,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 16.26649555199947,
+          "total_latency_s": 16.26649555199947,
+          "metadata": {
+            "category": "PAYMENT",
+            "difficulty": "easy",
+            "expected_source_file": "payment.md"
+          },
+          "transcript": [
+            {
+              "sent": "Which payment methods do you accept?",
+              "route": "information",
+              "detail": "We accept the following payment methods:\n\n- Credit/Debit Cards (Visa, Mastercard, American Express)\n- PayPal\n- Bank Transfers\n- Apple Pay\n- Google Pay\n\nYou can find a detailed list of accepted payment methods on our website by navigating to the \"Payment Methods\" section in the \"Account\" or \"Checkout\" page.",
+              "latency_s": 16.26649555199947
+            }
+          ]
+        },
+        {
+          "id": "hold-0033",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "Yes, we support Apple Pay as a payment option.",
+          "intent": "payment_issue",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.6909847259521484,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 18.989815974999146,
+          "total_latency_s": 18.989815974999146,
+          "metadata": {
+            "category": "PAYMENT",
+            "difficulty": "easy",
+            "expected_source_file": "payment.md"
+          },
+          "transcript": [
+            {
+              "sent": "Do you take Apple Pay?",
+              "route": "information",
+              "detail": "Yes, we support Apple Pay as a payment option.",
+              "latency_s": 18.989815974999146
+            }
+          ]
+        },
+        {
+          "id": "hold-0034",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "Unfortunately, the provided policy excerpts do not explicitly state what to do in case of a failed payment. However, they do mention that you can reach out to our dedicated customer support team through our contact page or by calling our support hotline to report the issue and get assistance.",
+          "intent": "payment_issue",
+          "intent_confidence": 0.9,
+          "retrieval_confidence": 0.6900016665458679,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 17.12640163099968,
+          "total_latency_s": 17.12640163099968,
+          "metadata": {
+            "category": "PAYMENT",
+            "difficulty": "medium",
+            "expected_source_file": "payment.md"
+          },
+          "transcript": [
+            {
+              "sent": "My payment failed, what should I do?",
+              "route": "information",
+              "detail": "Unfortunately, the provided policy excerpts do not explicitly state what to do in case of a failed payment. However, they do mention that you can reach out to our dedicated customer support team through our contact page or by calling our support hotline to report the issue and get assistance.",
+              "latency_s": 17.12640163099968
+            }
+          ]
+        },
+        {
+          "id": "hold-0035",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "Yes, you can pay with a bank transfer. According to our policy, \"Bank Transfers: Direct bank transfers are accepted, allowing you to make payments directly from your bank account.\"",
+          "intent": "check_payment_methods",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.6476931571960449,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 17.8876771439991,
+          "total_latency_s": 17.8876771439991,
+          "metadata": {
+            "category": "PAYMENT",
+            "difficulty": "easy",
+            "expected_source_file": "payment.md"
+          },
+          "transcript": [
+            {
+              "sent": "Can I pay with a bank transfer?",
+              "route": "information",
+              "detail": "Yes, you can pay with a bank transfer. According to our policy, \"Bank Transfers: Direct bank transfers are accepted, allowing you to make payments directly from your bank account.\"",
+              "latency_s": 17.8876771439991
+            }
+          ]
+        },
+        {
+          "id": "hold-0036",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To create an account, please visit our website at www.meridianretail.com and look for the \"Sign Up\" or \"Create Account\" button. Click on it, and you will be directed to a registration page where you'll need to provide some basic information such as your name, email address, and a password.",
+          "intent": "create_account",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.7246832251548767,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 11.039144777998445,
+          "total_latency_s": 11.039144777998445,
+          "metadata": {
+            "category": "ACCOUNT",
+            "difficulty": "easy",
+            "expected_source_file": "account.md"
+          },
+          "transcript": [
+            {
+              "sent": "How do I create an account?",
+              "route": "information",
+              "detail": "To create an account, please visit our website at www.meridianretail.com and look for the \"Sign Up\" or \"Create Account\" button. Click on it, and you will be directed to a registration page where you'll need to provide some basic information such as your name, email address, and a password.",
+              "latency_s": 11.039144777998445
+            }
+          ]
+        },
+        {
+          "id": "hold-0037",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To reset your password, look for the \"Forgot PIN\" option and click on it. You might be prompted to answer a few security questions to verify your identity. Once your identity is verified, you will receive further instructions on how to reset your PIN through the email associated with your account. Follow the instructions provided in the email carefully to set up a new PIN of your choice.",
+          "intent": "recover_password",
+          "intent_confidence": 0.9,
+          "retrieval_confidence": 0.7518069744110107,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 13.059747027000412,
+          "total_latency_s": 13.059747027000412,
+          "metadata": {
+            "category": "ACCOUNT",
+            "difficulty": "hard",
+            "expected_source_file": "account.md"
+          },
+          "transcript": [
+            {
+              "sent": "I forgot my password, how do I reset it?",
+              "route": "information",
+              "detail": "To reset your password, look for the \"Forgot PIN\" option and click on it. You might be prompted to answer a few security questions to verify your identity. Once your identity is verified, you will receive further instructions on how to reset your PIN through the email associated with your account. Follow the instructions provided in the email carefully to set up a new PIN of your choice.",
+              "latency_s": 13.059747027000412
+            }
+          ]
+        },
+        {
+          "id": "hold-0038",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To upgrade to a Premium account, follow these steps:\n\n1. Sign In: Log into our platform using your existing credentials.\n2. Account Settings: Navigate to your Settings or Profile section.\n3. Upgrade Option: Look for an option labeled \"Upgrade Account\" or \"Change Account Type\".\n4. Choose Premium: Select the Premium option from the available choices.\n5. Finalize the Upgrade: Follow the instructions and prompts provided on the screen to complete your account upgrade.",
+          "intent": "create_account",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.8246419429779053,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 15.23285598900111,
+          "total_latency_s": 15.23285598900111,
+          "metadata": {
+            "category": "ACCOUNT",
+            "difficulty": "medium",
+            "expected_source_file": "account.md"
+          },
+          "transcript": [
+            {
+              "sent": "How do I upgrade to a Premium account?",
+              "route": "information",
+              "detail": "To upgrade to a Premium account, follow these steps:\n\n1. Sign In: Log into our platform using your existing credentials.\n2. Account Settings: Navigate to your Settings or Profile section.\n3. Upgrade Option: Look for an option labeled \"Upgrade Account\" or \"Change Account Type\".\n4. Choose Premium: Select the Premium option from the available choices.\n5. Finalize the Upgrade: Follow the instructions and prompts provided on the screen to complete your account upgrade.",
+              "latency_s": 15.23285598900111
+            }
+          ]
+        },
+        {
+          "id": "hold-0039",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "I'd be happy to help you troubleshoot the issue. To assist you better, could you please provide more details about the specific errors you encountered during the sign-up process? Any additional information you can provide will help us identify the root cause and work towards resolving the issue promptly.",
+          "intent": "registration_problems",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.6745002865791321,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 15.080859759000305,
+          "total_latency_s": 15.080859759000305,
+          "metadata": {
+            "category": "ACCOUNT",
+            "difficulty": "medium",
+            "expected_source_file": "account.md"
+          },
+          "transcript": [
+            {
+              "sent": "I'm getting errors when I try to sign up.",
+              "route": "information",
+              "detail": "I'd be happy to help you troubleshoot the issue. To assist you better, could you please provide more details about the specific errors you encountered during the sign-up process? Any additional information you can provide will help us identify the root cause and work towards resolving the issue promptly.",
+              "latency_s": 15.080859759000305
+            }
+          ]
+        },
+        {
+          "id": "hold-0040",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To change the delivery address on your account, you can either contact our customer support team or access your account settings on our website. They will guide you through the process step-by-step, ensuring that your new address is accurately recorded.",
+          "intent": "change_shipping_address",
+          "intent_confidence": 0.9,
+          "retrieval_confidence": 0.810255229473114,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 15.939750163001008,
+          "total_latency_s": 15.939750163001008,
+          "metadata": {
+            "category": "SHIPPING",
+            "difficulty": "easy",
+            "expected_source_file": "shipping.md"
+          },
+          "transcript": [
+            {
+              "sent": "How do I change the delivery address on my account?",
+              "route": "information",
+              "detail": "To change the delivery address on your account, you can either contact our customer support team or access your account settings on our website. They will guide you through the process step-by-step, ensuring that your new address is accurately recorded.",
+              "latency_s": 15.939750163001008
+            }
+          ]
+        },
+        {
+          "id": "hold-0041",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To add a new shipping address, follow these steps:\n\n1. Log in to your account on our website or app.\n2. Navigate to the \"My Account\" or \"Profile\" section.\n3. Look for the \"Shipping Addresses\" or similar option.\n4. Click on \"Add New Address\" or \"Edit Shipping Addresses.\"\n5. Enter the details of your delivery address, including street name, city, state, postal code, and any additional information if applicable.\n6. Double-check the accuracy of the entered information before saving the changes.",
+          "intent": "set_up_shipping_address",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.7723138332366943,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 15.477633188000254,
+          "total_latency_s": 15.477633188000254,
+          "metadata": {
+            "category": "SHIPPING",
+            "difficulty": "easy",
+            "expected_source_file": "shipping.md"
+          },
+          "transcript": [
+            {
+              "sent": "Where do I add a new shipping address?",
+              "route": "information",
+              "detail": "To add a new shipping address, follow these steps:\n\n1. Log in to your account on our website or app.\n2. Navigate to the \"My Account\" or \"Profile\" section.\n3. Look for the \"Shipping Addresses\" or similar option.\n4. Click on \"Add New Address\" or \"Edit Shipping Addresses.\"\n5. Enter the details of your delivery address, including street name, city, state, postal code, and any additional information if applicable.\n6. Double-check the accuracy of the entered information before saving the changes.",
+              "latency_s": 15.477633188000254
+            }
+          ]
+        },
+        {
+          "id": "hold-0042",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "According to our policy, you can change your shipping address by either contacting our customer support team or accessing your account settings on our website.",
+          "intent": "change_shipping_address",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.6960593461990356,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 14.8920033710001,
+          "total_latency_s": 14.8920033710001,
+          "metadata": {
+            "category": "SHIPPING",
+            "difficulty": "medium",
+            "expected_source_file": "shipping.md"
+          },
+          "transcript": [
+            {
+              "sent": "I entered my address wrong, can I fix it?",
+              "route": "information",
+              "detail": "According to our policy, you can change your shipping address by either contacting our customer support team or accessing your account settings on our website.",
+              "latency_s": 14.8920033710001
+            }
+          ]
+        },
+        {
+          "id": "hold-0043",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "According to the policy excerpts, the required fields for a new delivery address include:\n\n- Recipient's name\n- Address\n- Contact information\n- Street name\n- City\n- State\n- Postal code\n- Any additional information if applicable",
+          "intent": "set_up_shipping_address",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.7355656623840332,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 15.038304800000333,
+          "total_latency_s": 15.038304800000333,
+          "metadata": {
+            "category": "SHIPPING",
+            "difficulty": "medium",
+            "expected_source_file": "shipping.md"
+          },
+          "transcript": [
+            {
+              "sent": "What fields do I need to fill in for a new delivery address?",
+              "route": "information",
+              "detail": "According to the policy excerpts, the required fields for a new delivery address include:\n\n- Recipient's name\n- Address\n- Contact information\n- Street name\n- City\n- State\n- Postal code\n- Any additional information if applicable",
+              "latency_s": 15.038304800000333
+            }
+          ]
+        },
+        {
+          "id": "hold-0044",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To find your invoice, you can follow these steps:\n\n1. Log in to your account on our website or app.\n2. Navigate to the \"Billing\" or \"Invoices\" section.\n3. Look for the option to search for invoices or bills.\n4. Enter your invoice number in the search bar.\n5. Click on the search button or press enter.\n\nAlternatively, you can also check your email inbox for a digital copy of the invoice that our system automatically sends to the email address associated with your account. If you can't find it in your inbox, please check your spam or junk folder.",
+          "intent": "check_invoice",
+          "intent_confidence": 0.9,
+          "retrieval_confidence": 0.7899216413497925,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 14.403219870000612,
+          "total_latency_s": 14.403219870000612,
+          "metadata": {
+            "category": "INVOICE",
+            "difficulty": "easy",
+            "expected_source_file": "invoice.md"
+          },
+          "transcript": [
+            {
+              "sent": "Where can I find my invoice?",
+              "route": "information",
+              "detail": "To find your invoice, you can follow these steps:\n\n1. Log in to your account on our website or app.\n2. Navigate to the \"Billing\" or \"Invoices\" section.\n3. Look for the option to search for invoices or bills.\n4. Enter your invoice number in the search bar.\n5. Click on the search button or press enter.\n\nAlternatively, you can also check your email inbox for a digital copy of the invoice that our system automatically sends to the email address associated with your account. If you can't find it in your inbox, please check your spam or junk folder.",
+              "latency_s": 14.403219870000612
+            }
+          ]
+        },
+        {
+          "id": "hold-0045",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To download a copy of your invoice, log in to your account on our website and navigate to the \"Billing\" or \"Invoices\" section. Once you're logged in, you'll be able to view and download your invoice directly from your account.",
+          "intent": "check_invoice",
+          "intent_confidence": 0.9,
+          "retrieval_confidence": 0.8145079612731934,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 15.185633160999714,
+          "total_latency_s": 15.185633160999714,
+          "metadata": {
+            "category": "INVOICE",
+            "difficulty": "easy",
+            "expected_source_file": "invoice.md"
+          },
+          "transcript": [
+            {
+              "sent": "How do I download a copy of my invoice?",
+              "route": "information",
+              "detail": "To download a copy of your invoice, log in to your account on our website and navigate to the \"Billing\" or \"Invoices\" section. Once you're logged in, you'll be able to view and download your invoice directly from your account.",
+              "latency_s": 15.185633160999714
+            }
+          ]
+        },
+        {
+          "id": "hold-0046",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "According to our policy, our system automatically sends a digital copy of the invoice to the email address associated with your account. If you can't find it in your inbox, please check your spam or junk folder as it might have been redirected there.",
+          "intent": "check_invoice",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.7277137041091919,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 14.155973881999671,
+          "total_latency_s": 14.155973881999671,
+          "metadata": {
+            "category": "INVOICE",
+            "difficulty": "medium",
+            "expected_source_file": "invoice.md"
+          },
+          "transcript": [
+            {
+              "sent": "I can't find the invoice email you sent.",
+              "route": "information",
+              "detail": "According to our policy, our system automatically sends a digital copy of the invoice to the email address associated with your account. If you can't find it in your inbox, please check your spam or junk folder as it might have been redirected there.",
+              "latency_s": 14.155973881999671
+            }
+          ]
+        },
+        {
+          "id": "hold-0047",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "According to the provided policy excerpts, if you haven't created an account yet, you can provide me with some details, such as your full name and email address, and I'll assist you in creating one.",
+          "intent": "check_invoice",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.7254042029380798,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 14.053300370000215,
+          "total_latency_s": 14.053300370000215,
+          "metadata": {
+            "category": "INVOICE",
+            "difficulty": "hard",
+            "expected_source_file": "invoice.md"
+          },
+          "transcript": [
+            {
+              "sent": "Can I get an invoice if I don't have an account?",
+              "route": "information",
+              "detail": "According to the provided policy excerpts, if you haven't created an account yet, you can provide me with some details, such as your full name and email address, and I'll assist you in creating one.",
+              "latency_s": 14.053300370000215
+            }
+          ]
+        },
+        {
+          "id": "hold-0048",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "Our customer service phone number is 1-800-555-0199.",
+          "intent": "contact_customer_service",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.7251906394958496,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 15.085059432998605,
+          "total_latency_s": 15.085059432998605,
+          "metadata": {
+            "category": "CONTACT",
+            "difficulty": "easy",
+            "expected_source_file": "contact.md"
+          },
+          "transcript": [
+            {
+              "sent": "What's your customer service phone number?",
+              "route": "information",
+              "detail": "Our customer service phone number is 1-800-555-0199.",
+              "latency_s": 15.085059432998605
+            }
+          ]
+        },
+        {
+          "id": "hold-0049",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "Our support team is available Monday–Friday, 9 AM–7 PM EST.",
+          "intent": "contact_customer_service",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.7349452972412109,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 9.905199171000277,
+          "total_latency_s": 9.905199171000277,
+          "metadata": {
+            "category": "CONTACT",
+            "difficulty": "easy",
+            "expected_source_file": "contact.md"
+          },
+          "transcript": [
+            {
+              "sent": "What hours is your support team available?",
+              "route": "information",
+              "detail": "Our support team is available Monday–Friday, 9 AM–7 PM EST.",
+              "latency_s": 9.905199171000277
+            }
+          ]
+        },
+        {
+          "id": "hold-0050",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "You can try reaching out to our customer support team through various channels such as phone, email, or live chat. Our dedicated representatives are available Monday–Friday, 9 AM–7 PM EST. If you prefer speaking over the phone, you can contact our helpline at 1-800-555-0199. Alternatively, you can send an email to our support team at support@meridianretail.com or initiate a live chat on our website at www.meridianretail.com.",
+          "intent": "contact_human_agent",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.6262121200561523,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 13.179343219999282,
+          "total_latency_s": 13.179343219999282,
+          "metadata": {
+            "category": "CONTACT",
+            "difficulty": "medium",
+            "expected_source_file": "contact.md"
+          },
+          "transcript": [
+            {
+              "sent": "I want to talk to a real person, not a bot.",
+              "route": "information",
+              "detail": "You can try reaching out to our customer support team through various channels such as phone, email, or live chat. Our dedicated representatives are available Monday–Friday, 9 AM–7 PM EST. If you prefer speaking over the phone, you can contact our helpline at 1-800-555-0199. Alternatively, you can send an email to our support team at support@meridianretail.com or initiate a live chat on our website at www.meridianretail.com.",
+              "latency_s": 13.179343219999282
+            }
+          ]
+        },
+        {
+          "id": "hold-0051",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "Yes, you can reach us by email. Our email address is support@meridianretail.com.",
+          "intent": "contact_customer_service",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.6071847081184387,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 13.916114806001133,
+          "total_latency_s": 13.916114806001133,
+          "metadata": {
+            "category": "CONTACT",
+            "difficulty": "easy",
+            "expected_source_file": "contact.md"
+          },
+          "transcript": [
+            {
+              "sent": "Can I reach you by email?",
+              "route": "information",
+              "detail": "Yes, you can reach us by email. Our email address is support@meridianretail.com.",
+              "latency_s": 13.916114806001133
+            }
+          ]
+        },
+        {
+          "id": "hold-0052",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To file a complaint, please provide me with more details about your claim. This will help me better understand your specific situation and provide you with the most appropriate solution.",
+          "intent": "complaint",
+          "intent_confidence": 0.9,
+          "retrieval_confidence": 0.7249074578285217,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 16.056511582000894,
+          "total_latency_s": 16.056511582000894,
+          "metadata": {
+            "category": "FEEDBACK",
+            "difficulty": "easy",
+            "expected_source_file": "feedback.md"
+          },
+          "transcript": [
+            {
+              "sent": "How do I file a complaint?",
+              "route": "information",
+              "detail": "To file a complaint, please provide me with more details about your claim. This will help me better understand your specific situation and provide you with the most appropriate solution.",
+              "latency_s": 16.056511582000894
+            }
+          ]
+        },
+        {
+          "id": "hold-0053",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To leave a review, you can reach out to our customer support team via phone at 1-800-555-0199 or email at support@meridianretail.com. Alternatively, you can visit our website at www.meridianretail.com and navigate to the \"Contact Us\" section, where you'll find a feedback form to provide detailed information about your experience.",
+          "intent": "review",
+          "intent_confidence": 1.0,
+          "retrieval_confidence": 0.725092887878418,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 20.252349872000195,
+          "total_latency_s": 20.252349872000195,
+          "metadata": {
+            "category": "FEEDBACK",
+            "difficulty": "easy",
+            "expected_source_file": "feedback.md"
+          },
+          "transcript": [
+            {
+              "sent": "I want to leave a review of a product I bought.",
+              "route": "information",
+              "detail": "To leave a review, you can reach out to our customer support team via phone at 1-800-555-0199 or email at support@meridianretail.com. Alternatively, you can visit our website at www.meridianretail.com and navigate to the \"Contact Us\" section, where you'll find a feedback form to provide detailed information about your experience.",
+              "latency_s": 20.252349872000195
+            }
+          ]
+        },
+        {
+          "id": "hold-0054",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "You can submit feedback about your experience by reaching out to our customer support team via phone at 1-800-555-0199 or email at support@meridianretail.com. Alternatively, you can visit our website at www.meridianretail.com and navigate to the \"Contact Us\" section, where you'll find a feedback form to provide detailed information about your experience.",
+          "intent": "complaint",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.6522784233093262,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 17.065457949998745,
+          "total_latency_s": 17.065457949998745,
+          "metadata": {
+            "category": "FEEDBACK",
+            "difficulty": "easy",
+            "expected_source_file": "feedback.md"
+          },
+          "transcript": [
+            {
+              "sent": "Where do I submit feedback about my experience?",
+              "route": "information",
+              "detail": "You can submit feedback about your experience by reaching out to our customer support team via phone at 1-800-555-0199 or email at support@meridianretail.com. Alternatively, you can visit our website at www.meridianretail.com and navigate to the \"Contact Us\" section, where you'll find a feedback form to provide detailed information about your experience.",
+              "latency_s": 17.065457949998745
+            }
+          ]
+        },
+        {
+          "id": "hold-0055",
+          "expected_route": "information",
+          "predicted_route": "information",
+          "detail": "To make a formal claim against our company, please provide me with the specific details of your complaint. This will help me guide you towards the necessary steps and ensure that your claim is thoroughly reviewed by the relevant team.",
+          "intent": "complaint",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.6462106704711914,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": true,
+          "answer_match": true,
+          "first_turn_latency_s": 25.36524461999943,
+          "total_latency_s": 25.36524461999943,
+          "metadata": {
+            "category": "FEEDBACK",
+            "difficulty": "medium",
+            "expected_source_file": "feedback.md"
+          },
+          "transcript": [
+            {
+              "sent": "How do I make a formal claim against your company?",
+              "route": "information",
+              "detail": "To make a formal claim against our company, please provide me with the specific details of your complaint. This will help me guide you towards the necessary steps and ensure that your claim is thoroughly reviewed by the relevant team.",
+              "latency_s": 25.36524461999943
+            }
+          ]
+        },
+        {
+          "id": "hold-0056",
+          "expected_route": "escalate",
+          "predicted_route": "escalate",
+          "detail": "I've connected you with a member of our team who can help with this. Before they reach out, could you share your email or order number so they can follow up directly?",
+          "intent": "contact_customer_service",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.4901067614555359,
+          "escalation_id": null,
+          "reason": "still_unclear_after_clarification_low_retrieval_relevance",
+          "turns": 2,
+          "answer_grounded": null,
+          "grounded": null,
+          "recall_hit": null,
+          "answer_match": null,
+          "first_turn_latency_s": 6.445885492999878,
+          "total_latency_s": 13.865808554999603,
+          "metadata": {
+            "category": "ADVERSARIAL",
+            "difficulty": "hard",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "What's your company's stock ticker symbol and current share price?",
+              "route": "information",
+              "detail": "Sorry, I didn't quite catch that — could you tell me a bit more about what you're trying to do?",
+              "latency_s": 6.445885492999878
+            },
+            {
+              "sent": "What's your company's stock ticker symbol and current share price?",
+              "route": "escalate",
+              "detail": "I've connected you with a member of our team who can help with this. Before they reach out, could you share your email or order number so they can follow up directly?",
+              "latency_s": 7.419923061999725
+            }
+          ]
+        },
+        {
+          "id": "hold-0057",
+          "expected_route": "escalate",
+          "predicted_route": "information",
+          "detail": "I'm not able to provide information on tax implications. The provided policy excerpts do not address tax-related topics. I recommend consulting a tax professional or the relevant tax authority for guidance on expensing business purchases.",
+          "intent": "payment_issue",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.5806965827941895,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": true,
+          "recall_hit": null,
+          "answer_match": false,
+          "first_turn_latency_s": 31.31484025300051,
+          "total_latency_s": 31.31484025300051,
+          "metadata": {
+            "category": "ADVERSARIAL",
+            "difficulty": "hard",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "Could you walk me through the tax implications of expensing this purchase as a business deduction?",
+              "route": "information",
+              "detail": "I'm not able to provide information on tax implications. The provided policy excerpts do not address tax-related topics. I recommend consulting a tax professional or the relevant tax authority for guidance on expensing business purchases.",
+              "latency_s": 31.31484025300051
+            }
+          ]
+        },
+        {
+          "id": "hold-0058",
+          "expected_route": "escalate",
+          "predicted_route": "escalate",
+          "detail": "I've connected you with a member of our team who can help with this. Before they reach out, could you share your email or order number so they can follow up directly?",
+          "intent": "contact_customer_service",
+          "intent_confidence": 0.5,
+          "retrieval_confidence": 0.46400368213653564,
+          "escalation_id": null,
+          "reason": "still_unclear_after_clarification_low_intent_confidence",
+          "turns": 2,
+          "answer_grounded": null,
+          "grounded": null,
+          "recall_hit": null,
+          "answer_match": null,
+          "first_turn_latency_s": 6.467994012000418,
+          "total_latency_s": 14.938577528000678,
+          "metadata": {
+            "category": "ADVERSARIAL",
+            "difficulty": "medium",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "asdkjh asd kjahsd lkjh",
+              "route": "information",
+              "detail": "Sorry, I didn't quite catch that — could you tell me a bit more about what you're trying to do?",
+              "latency_s": 6.467994012000418
+            },
+            {
+              "sent": "asdkjh asd kjahsd lkjh",
+              "route": "escalate",
+              "detail": "I've connected you with a member of our team who can help with this. Before they reach out, could you share your email or order number so they can follow up directly?",
+              "latency_s": 8.47058351600026
+            }
+          ]
+        },
+        {
+          "id": "hold-0059",
+          "expected_route": "escalate",
+          "predicted_route": "escalate",
+          "detail": "I've connected you with a member of our team who can help with this. Before they reach out, could you share your email or order number so they can follow up directly?",
+          "intent": "contact_customer_service",
+          "intent_confidence": 0.8,
+          "retrieval_confidence": 0.5487872362136841,
+          "escalation_id": null,
+          "reason": "still_unclear_after_clarification_low_retrieval_relevance",
+          "turns": 2,
+          "answer_grounded": null,
+          "grounded": null,
+          "recall_hit": null,
+          "answer_match": null,
+          "first_turn_latency_s": 6.391478875999383,
+          "total_latency_s": 13.924312604000079,
+          "metadata": {
+            "category": "ADVERSARIAL",
+            "difficulty": "hard",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "I need help with the thing we discussed.",
+              "route": "information",
+              "detail": "Sorry, I didn't quite catch that — could you tell me a bit more about what you're trying to do?",
+              "latency_s": 6.391478875999383
+            },
+            {
+              "sent": "I need help with the thing we discussed.",
+              "route": "escalate",
+              "detail": "I've connected you with a member of our team who can help with this. Before they reach out, could you share your email or order number so they can follow up directly?",
+              "latency_s": 7.532833728000696
+            }
+          ]
+        },
+        {
+          "id": "hold-0060",
+          "expected_route": "escalate",
+          "predicted_route": "information",
+          "detail": "I'm not able to find any information in the provided policy excerpts that addresses the labor dispute at your supplier's factory.",
+          "intent": "complaint",
+          "intent_confidence": 0.9,
+          "retrieval_confidence": 0.5601872801780701,
+          "escalation_id": null,
+          "reason": null,
+          "turns": 1,
+          "answer_grounded": true,
+          "grounded": false,
+          "recall_hit": null,
+          "answer_match": false,
+          "first_turn_latency_s": 19.684752461000244,
+          "total_latency_s": 19.684752461000244,
+          "metadata": {
+            "category": "ADVERSARIAL",
+            "difficulty": "hard",
+            "expected_source_file": null
+          },
+          "transcript": [
+            {
+              "sent": "What is your official position on the labor dispute at your supplier's factory?",
+              "route": "information",
+              "detail": "I'm not able to find any information in the provided policy excerpts that addresses the labor dispute at your supplier's factory.",
+              "latency_s": 19.684752461000244
+            }
+          ]
+        }
+      ],
+      "baseline": []
+    }
+  }
+}

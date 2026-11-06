@@ -112,10 +112,36 @@ ESCALATION_STORE_PATH = os.environ.get("ESCALATION_STORE_PATH", "./eval/escalati
 # --- Mock order store (agent/tools.py) ---------------------------------------
 MOCK_ORDERS_PATH = os.environ.get("MOCK_ORDERS_PATH", "data/mock_orders.json")
 
+# --- Attachments (Phase D, see ANALYSIS.md) -----------------------------------
+# Local disk, same reasoning as ESCALATION_STORE_PATH above — no cloud
+# deployment target exists for this project today (see ANALYSIS.md's Phase D
+# entry), so a cloud bucket would be speculative infrastructure with nothing
+# to point it at. Kept behind agent/attachments.py so swapping to one later,
+# if this project ever gets a real hosted deployment, is a contained change.
+ATTACHMENTS_STORE_PATH = os.environ.get("ATTACHMENTS_STORE_PATH", "./data/attachments")
+ATTACHMENTS_MAX_BYTES = int(os.environ.get("ATTACHMENTS_MAX_BYTES", 5 * 1024 * 1024))  # 5 MB
+ATTACHMENTS_ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
+
+# --- Admin write actions (Phase D, live human handoff — see ANALYSIS.md) -----
+# Gates POST /escalations/{id}/respond only — every other admin-dashboard
+# route (Phase C) stays unauthenticated by the same reasoning as before; this
+# one is a WRITE (a human can post a reply that appears in a customer's live
+# conversation), a meaningfully bigger exposure than a read-only dashboard,
+# confirmed with the user as worth a minimal gate. Unset (the default) means
+# the endpoint FAILS CLOSED — refuses every request — rather than silently
+# becoming open; a real deployment must set this deliberately.
+ADMIN_API_TOKEN = os.environ.get("ADMIN_API_TOKEN") or None
+
 # --- Backend / CORS ------------------------------------------------------------
 CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "http://localhost:3000").split(",")
 BACKEND_HOST = os.environ.get("BACKEND_HOST", "0.0.0.0")
 BACKEND_PORT = int(os.environ.get("BACKEND_PORT", 8000))
+# The externally-reachable base URL for this backend — used only to build a
+# full attachment link for Slack messages (agent/escalation.py), since
+# Slack needs an absolute URL, not a relative path. Defaults to localhost
+# because there's no real hosted deployment for this project today (see
+# ANALYSIS.md's Phase D entry) — a genuine deployment must override this.
+BACKEND_PUBLIC_URL = os.environ.get("BACKEND_PUBLIC_URL", f"http://localhost:{BACKEND_PORT}")
 
 # --- Logging -------------------------------------------------------------
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")

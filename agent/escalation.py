@@ -34,8 +34,8 @@ import uuid
 
 import requests
 
-from app.config import ESCALATION_STORE_PATH, SLACK_WEBHOOK_URL
-from app.schemas import EscalationPacket
+from app.config import BACKEND_PUBLIC_URL, ESCALATION_STORE_PATH, SLACK_WEBHOOK_URL
+from app.schemas import EscalationPacket, EscalationStatus
 
 logger = logging.getLogger("agent.escalation")
 
@@ -86,12 +86,20 @@ class EscalationHandler:
                 )
                 """
             )
-            # M9: additive column on an existing local store — a plain
-            # CREATE TABLE would leave old rows without it; ALTER TABLE
-            # with a default backfills them transparently.
+            # M9/Phase D: additive columns on an existing local store — a
+            # plain CREATE TABLE would leave old rows without them; ALTER
+            # TABLE with a default backfills them transparently.
             existing_columns = {row[1] for row in conn.execute("PRAGMA table_info(escalations)").fetchall()}
             if "attempted_summary" not in existing_columns:
                 conn.execute("ALTER TABLE escalations ADD COLUMN attempted_summary TEXT NOT NULL DEFAULT ''")
+            if "attachment_id" not in existing_columns:
+                conn.execute("ALTER TABLE escalations ADD COLUMN attachment_id TEXT")
+            if "human_status" not in existing_columns:
+                conn.execute("ALTER TABLE escalations ADD COLUMN human_status TEXT NOT NULL DEFAULT 'waiting'")
+            if "human_reply" not in existing_columns:
+                conn.execute("ALTER TABLE escalations ADD COLUMN human_reply TEXT")
+            if "responded_at" not in existing_columns:
+                conn.execute("ALTER TABLE escalations ADD COLUMN responded_at TEXT")
             conn.commit()
         finally:
             conn.close()
@@ -117,13 +125,19 @@ class EscalationHandler:
         slots: dict,
         attempted_summary: str,
         explicit_contact: str = None,
+        attachment_id: str = None,
     ) -> EscalationPacket:
         """§8 steps 1-4, terminal step. `explicit_contact` — when given —
         is trusted as-is (agent.py's `awaiting_contact` round-trip already
         confirmed it's a direct answer to "please share your email or
         order number," so an order_id IS acceptable there, unlike the
         passive `check_known_contact()` path). Otherwise falls back to the
-        passive check."""
+        passive check.
+
+        `attachment_id` (Phase D) — set only when the customer attached an
+        image on the turn that triggered this escalation (see
+        agent/attachments.py's docstring). Never inspected here or by the
+        LLM; only forwarded to Slack as a link for a human to look at."""
         contact = explicit_contact or self.check_known_contact(slots, query)
 
         packet = EscalationPacket(
@@ -137,6 +151,7 @@ class EscalationHandler:
             reason=reason,
             timestamp=_utc_now_iso(),
             attempted_summary=attempted_summary,
+            attachment_id=attachment_id,
         )
 
         self._insert(packet)  # ALWAYS FIRST, guaranteed, before Slack (step 3)
@@ -195,18 +210,28 @@ class EscalationHandler:
         # itself, so a very long customer message doesn't turn into a wall
         # of text there.
         query_display = _truncate_for_display(packet.query, _SLACK_QUERY_DISPLAY_MAX_CHARS)
+        blocks = [
+            {
+                "type": "header",
+                "text": {"type": "plain_text", "text": f"🚨 Escalation {packet.escalation_id}", "emoji": True},
+            },
+            {"type": "divider"},
+            {"type": "section", "text": {"type": "mrkdwn", "text": f"*Customer Query:*\n{query_display}"}},
+            {"type": "section", "text": {"type": "mrkdwn", "text": f"*What We Tried:*\n{summary_text}"}},
+            {"type": "section", "text": {"type": "mrkdwn", "text": f"*Contact:*\n{contact_text}"}},
+        ]
+        # Phase D: a link, not an inline Slack image block — this backend's
+        # BACKEND_PUBLIC_URL is only real/reachable in a genuine hosted
+        # deployment (see ANALYSIS.md's Phase D entry); on localhost it's a
+        # link Slack can't itself preview, but a human can still open it.
+        if packet.attachment_id:
+            attachment_url = f"{BACKEND_PUBLIC_URL}/attachments/{packet.attachment_id}"
+            blocks.append(
+                {"type": "section", "text": {"type": "mrkdwn", "text": f"*Attachment:*\n<{attachment_url}|View image>"}}
+            )
         return {
             "text": f"Escalation {packet.escalation_id}: {query_display}",
-            "blocks": [
-                {
-                    "type": "header",
-                    "text": {"type": "plain_text", "text": f"🚨 Escalation {packet.escalation_id}", "emoji": True},
-                },
-                {"type": "divider"},
-                {"type": "section", "text": {"type": "mrkdwn", "text": f"*Customer Query:*\n{query_display}"}},
-                {"type": "section", "text": {"type": "mrkdwn", "text": f"*What We Tried:*\n{summary_text}"}},
-                {"type": "section", "text": {"type": "mrkdwn", "text": f"*Contact:*\n{contact_text}"}},
-            ],
+            "blocks": blocks,
         }
 
     def _insert(self, packet: EscalationPacket) -> None:
@@ -216,8 +241,9 @@ class EscalationHandler:
                 """
                 INSERT INTO escalations
                     (escalation_id, session_id, contact, contact_captured, slack_delivered,
-                     query, retrieved_context, reason, timestamp, attempted_summary)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     query, retrieved_context, reason, timestamp, attempted_summary, attachment_id,
+                     human_status, human_reply, responded_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     packet.escalation_id,
@@ -230,6 +256,10 @@ class EscalationHandler:
                     packet.reason,
                     packet.timestamp,
                     packet.attempted_summary,
+                    packet.attachment_id,
+                    packet.human_status,
+                    packet.human_reply,
+                    packet.responded_at,
                 ),
             )
             conn.commit()
@@ -250,7 +280,8 @@ class EscalationHandler:
     def _row_to_packet(self, row) -> EscalationPacket:
         (
             escalation_id, session_id, contact, contact_captured, slack_delivered,
-            query, retrieved_context_json, reason, timestamp, attempted_summary,
+            query, retrieved_context_json, reason, timestamp, attempted_summary, attachment_id,
+            human_status, human_reply, responded_at,
         ) = row
         retrieved_context = json.loads(retrieved_context_json) if retrieved_context_json else []
         return EscalationPacket(
@@ -264,4 +295,57 @@ class EscalationHandler:
             reason=reason,
             timestamp=timestamp,
             attempted_summary=attempted_summary or "",
+            attachment_id=attachment_id,
+            human_status=human_status or "waiting",
+            human_reply=human_reply,
+            responded_at=responded_at,
+        )
+
+    # ------------------------------------------------------------------
+    # Phase D: live human handoff (see ANALYSIS.md's Phase D entry) — Slack
+    # itself stays one-way; this is what actually closes the loop back to
+    # the customer, via a human action on the admin dashboard.
+    # ------------------------------------------------------------------
+
+    def respond(self, escalation_id: str, status: str, reply: str = None) -> EscalationPacket | None:
+        """Called by POST /escalations/{id}/respond (admin-dashboard action,
+        gated by ADMIN_API_TOKEN at the route level — this method itself
+        doesn't check auth). Returns the updated packet, or None if
+        `escalation_id` doesn't exist."""
+        conn = self._connect()
+        try:
+            responded_at = _utc_now_iso() if status == "responded" else None
+            cursor = conn.execute(
+                """
+                UPDATE escalations
+                SET human_status = ?, human_reply = COALESCE(?, human_reply), responded_at = COALESCE(?, responded_at)
+                WHERE escalation_id = ?
+                """,
+                (status, reply, responded_at, escalation_id),
+            )
+            conn.commit()
+            if cursor.rowcount == 0:
+                return None
+            row = conn.execute("SELECT * FROM escalations WHERE escalation_id = ?", (escalation_id,)).fetchone()
+        finally:
+            conn.close()
+        return self._row_to_packet(row)
+
+    def get_status(self, escalation_id: str) -> EscalationStatus | None:
+        """The customer-facing poll — deliberately returns only status
+        fields (see EscalationStatus's docstring), not the full packet."""
+        conn = self._connect()
+        try:
+            row = conn.execute(
+                "SELECT escalation_id, human_status, human_reply, responded_at FROM escalations WHERE escalation_id = ?",
+                (escalation_id,),
+            ).fetchone()
+        finally:
+            conn.close()
+        if row is None:
+            return None
+        escalation_id, human_status, human_reply, responded_at = row
+        return EscalationStatus(
+            escalation_id=escalation_id, human_status=human_status or "waiting",
+            human_reply=human_reply, responded_at=responded_at,
         )

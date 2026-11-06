@@ -90,6 +90,11 @@ Open `.env` in any text editor and fill in:
 - `NEO4J_PASSWORD` — choose any password (you're setting it for the
   first time; you'll use this same value again in Step 4)
 - `SLACK_WEBHOOK_URL` — optional, leave blank if you don't have one
+- `ADMIN_API_TOKEN` — not in `.env.example` by default (nothing to leave
+  blank); only add a line like `ADMIN_API_TOKEN=some-random-string` to
+  your own `.env` if you want to test the live-handoff "respond to
+  escalation" feature (Phase D). Without it, that one endpoint fails
+  closed — it's not silently open just because the variable is unset.
 Save and close the file.
  
 **4. Start the databases**
@@ -182,6 +187,11 @@ fill in:
 - `NEO4J_PASSWORD` — choose any password (you're setting it for the
   first time; you'll use this same value again in Step 4)
 - `SLACK_WEBHOOK_URL` — optional, leave blank if you don't have one
+- `ADMIN_API_TOKEN` — not in `.env.example` by default (nothing to leave
+  blank); only add a line like `ADMIN_API_TOKEN=some-random-string` to
+  your own `.env` if you want to test the live-handoff "respond to
+  escalation" feature (Phase D). Without it, that one endpoint fails
+  closed — it's not silently open just because the variable is unset.
 Save and close the file.
  
 **4. Start the databases**
@@ -259,6 +269,11 @@ Open `.env` in any text editor (e.g. `nano .env`) and fill in:
 - `NEO4J_PASSWORD` — choose any password (you're setting it for the
   first time; you'll use this same value again in Step 4)
 - `SLACK_WEBHOOK_URL` — optional, leave blank if you don't have one
+- `ADMIN_API_TOKEN` — not in `.env.example` by default (nothing to leave
+  blank); only add a line like `ADMIN_API_TOKEN=some-random-string` to
+  your own `.env` if you want to test the live-handoff "respond to
+  escalation" feature (Phase D). Without it, that one endpoint fails
+  closed — it's not silently open just because the variable is unset.
 Save and close the file.
  
 **4. Start the databases**

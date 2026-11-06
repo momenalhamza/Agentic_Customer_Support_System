@@ -1,0 +1,382 @@
+.page {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.subtitle {
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.adminTokenRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.adminTokenLabel {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.adminTokenInput {
+  flex: 1;
+  max-width: 280px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--foreground);
+  font-size: 12.5px;
+  outline: none;
+}
+
+.adminTokenInput:focus {
+  border-color: var(--accent);
+}
+
+.errorBanner {
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: var(--error-bg);
+  color: var(--error-fg);
+  border: 1px solid var(--error-border);
+  font-size: 13.5px;
+}
+
+.statRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.statTile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+}
+
+.statLabel {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.statValue {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+.statGood {
+  color: var(--badge-action-fg);
+}
+
+.statWarning {
+  color: var(--error-fg);
+}
+
+.panel {
+  padding: 20px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.panelHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.panelTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.emptyNote {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.filterToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--foreground);
+  cursor: pointer;
+}
+
+.groupedChart {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.groupedChartRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.groupedChartLabel {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.barChart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.barChartCompact {
+  gap: 4px;
+}
+
+.barRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.barLabel {
+  flex-shrink: 0;
+  width: 150px;
+  font-size: 12.5px;
+  color: var(--muted);
+  word-break: break-word;
+}
+
+.barTrack {
+  flex: 1;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface-raised);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.barValue {
+  flex-shrink: 0;
+  width: 28px;
+  text-align: right;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.hourlyChart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 100px;
+}
+
+.hourlyBarWrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 4px;
+}
+
+.hourlyBarTrack {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  border-radius: 3px;
+  background: var(--surface-raised);
+  overflow: hidden;
+}
+
+.hourlyBarFill {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  background: var(--accent);
+  transition: height 0.3s ease;
+}
+
+.hourlyLabel {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  text-align: left;
+  padding: 8px 10px;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--border);
+  color: var(--foreground);
+  vertical-align: top;
+}
+
+.tableTimestamp {
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.tableQuery {
+  max-width: 320px;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statusGood {
+  background: var(--badge-action-bg);
+  color: var(--badge-action-fg);
+}
+
+.statusWarning {
+  background: var(--error-bg);
+  color: var(--error-fg);
+}
+
+.statusInfo {
+  background: var(--badge-info-bg);
+  color: var(--badge-info-fg);
+}
+
+.statusNeutral {
+  background: var(--surface-raised);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.humanReplyPreview {
+  margin-top: 4px;
+  font-size: 11.5px;
+  color: var(--muted);
+  max-width: 200px;
+}
+
+.respondCell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 220px;
+}
+
+.respondButton {
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--foreground);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.respondButton:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.respondButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.respondReplyRow {
+  display: flex;
+  gap: 4px;
+}
+
+.respondReplyInput {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--foreground);
+  font-size: 11.5px;
+  outline: none;
+}
+
+.respondReplyInput:focus {
+  border-color: var(--accent);
+}
+
+.respondHint {
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
+.respondError {
+  font-size: 10.5px;
+  color: var(--error-fg);
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 20px 14px 48px;
+  }
+}

@@ -13,3 +13,7 @@ npm-debug.log*
 .DS_Store
 *.swp
 *.log
+
+# Phase D: uploaded attachment files (not metadata — the escalations DB
+# already tracks references to these) — local runtime data, not source.
+data/attachments/

@@ -102,12 +102,12 @@ class FakeEscalation:
         match = _EMAIL_RE.search(query)
         return match.group(0) if match else None
 
-    def finalize(self, query, session_id, reason, retrieved_context, slots, attempted_summary, explicit_contact=None):
+    def finalize(self, query, session_id, reason, retrieved_context, slots, attempted_summary, explicit_contact=None, attachment_id=None):
         contact = explicit_contact or self.check_known_contact(slots, query)
         self.finalize_calls.append(
             {
                 "query": query, "session_id": session_id, "reason": reason,
-                "attempted_summary": attempted_summary, "contact": contact,
+                "attempted_summary": attempted_summary, "contact": contact, "attachment_id": attachment_id,
             }
         )
         return EscalationPacket(
@@ -131,11 +131,11 @@ class FakeTools:
         self.cancel_calls = []
         self.track_calls = []
 
-    def cancel_order(self, order_id):
+    def cancel_order(self, order_id, language="en"):
         self.cancel_calls.append(order_id)
         return self._cancel_result
 
-    def track_order(self, order_id):
+    def track_order(self, order_id, language="en"):
         self.track_calls.append(order_id)
         return self._track_result
 
@@ -178,7 +178,7 @@ def _patch_generate(monkeypatch, answers):
     """`answers` is a list consumed in order across successive calls."""
     calls = {"n": 0}
 
-    def _fake_generate(llm, query, chunks, model=None):
+    def _fake_generate(llm, query, chunks, language="en", model=None):
         i = calls["n"]
         calls["n"] += 1
         return answers[min(i, len(answers) - 1)]
@@ -324,7 +324,7 @@ def test_low_intent_confidence_asks_clarifying_question_first(monkeypatch):
     response = agent.handle_message("gibberish query", "s1")
 
     assert response.route == "information"
-    assert response.detail == _CLARIFICATION_QUESTION
+    assert response.detail == _CLARIFICATION_QUESTION["en"]
     assert session_store.get_state("s1").pending == "awaiting_clarification"
 
 
@@ -337,7 +337,7 @@ def test_low_retrieval_relevance_asks_clarifying_question_first(monkeypatch):
     response = agent.handle_message("some vague question", "s1")
 
     assert response.route == "information"
-    assert response.detail == _CLARIFICATION_QUESTION
+    assert response.detail == _CLARIFICATION_QUESTION["en"]
     assert session_store.get_state("s1").pending == "awaiting_clarification"
 
 
@@ -355,7 +355,7 @@ def test_low_bm25_relevance_asks_clarifying_question_first_despite_ok_dense_scor
     response = agent.handle_message("asdf1234 zzz order thing help???", "s1")
 
     assert response.route == "information"
-    assert response.detail == _CLARIFICATION_QUESTION
+    assert response.detail == _CLARIFICATION_QUESTION["en"]
     assert session_store.get_state("s1").pending == "awaiting_clarification"
 
 

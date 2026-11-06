@@ -27,6 +27,43 @@ This project builds a customer support agent that:
 - **Knows its limits.** Anything it isn't confident about is escalated
   to a human, logged permanently, and posted live to a Slack channel —
   instead of fabricating an answer or guessing at an action.
+- **Speaks Arabic too.** A customer writing in Arabic gets a fluent
+  Arabic reply, grounded in the same English knowledge base — the query
+  is translated for retrieval only, never the corpus itself. See
+  ANALYSIS.md's Phase B entry for the retrieval-quality investigation
+  behind this.
+- **Takes feedback and reports on itself.** A 👍/👎 under every answer
+  feeds a small admin dashboard (`/admin` in the frontend) showing Groq
+  usage, escalation/Slack-delivery status, feedback trends, and usage
+  analytics (most common questions, peak hours, session engagement) —
+  see ANALYSIS.md's Phase C/D entries, including the (currently
+  unauthenticated) access tradeoff.
+- **Supports voice input.** A mic button (Chrome/Edge — the browser's
+  native Web Speech API, no server round-trip) lets a customer speak
+  their message instead of typing it. See ANALYSIS.md's Phase D entry
+  for browser-support caveats and manual test steps.
+- **Accepts image attachments.** A customer can attach a photo (e.g. of
+  a damaged product); it's stored on local disk and forwarded as a
+  Slack link only if the conversation escalates — never analyzed by
+  the LLM (this project has no vision-capable model configured). See
+  ANALYSIS.md's Phase D entry for the storage/processing tradeoffs.
+- **Remembers your conversation.** Refreshing the page no longer loses
+  the transcript, and a customer can optionally save their history to
+  view past conversations from another device.
+  ⚠️ **Known limitation:** that cross-device link is an **unverified
+  email** — no confirmation code, no login. Anyone who knows or guesses
+  a customer's email can read their saved history from any device. This
+  is an accepted tradeoff for this project's current local-development
+  stage only (see ANALYSIS.md's Phase D entry) — it must be replaced
+  with a verified flow before any real deployment.
+- **Closes the loop after escalation.** Slack still gets a one-way
+  notification (unchanged), but a human can now mark a case picked up
+  or send a reply from the admin dashboard, and the customer sees it
+  live — no more silent "a team member has been notified" with no
+  follow-up. The reply-posting endpoint requires a shared `ADMIN_API_TOKEN`
+  (unset by default, so it's off until deliberately configured); see
+  ANALYSIS.md's Phase D entry for why real two-way Slack wasn't built
+  instead.
 Full technical design: **[ARCHITECTURE.md](ARCHITECTURE.md)** — the
 single source of truth for this project. This README summarizes; it
 doesn't duplicate that document.

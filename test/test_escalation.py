@@ -118,6 +118,32 @@ def test_finalize_retrieved_context_and_summary_roundtrip():
     os.remove(path)
 
 
+# --- Phase D: attachment_id ---------------------------------------------------
+
+
+def test_finalize_attachment_id_roundtrips():
+    handler, path = _handler()
+    packet = handler.finalize(
+        query="it arrived damaged", session_id="s1", reason="low_retrieval_relevance",
+        retrieved_context=[], slots={}, attempted_summary="summary", attachment_id="abc-123",
+    )
+    assert packet.attachment_id == "abc-123"
+    stored = handler.list_escalations()
+    assert stored[0].attachment_id == "abc-123"
+    os.remove(path)
+
+
+def test_finalize_without_attachment_id_stores_none():
+    handler, path = _handler()
+    handler.finalize(
+        query="q", session_id="s1", reason="low_intent_confidence",
+        retrieved_context=[], slots={}, attempted_summary="summary",
+    )
+    stored = handler.list_escalations()
+    assert stored[0].attachment_id is None
+    os.remove(path)
+
+
 # --- Slack format ------------------------------------------------------------
 
 
@@ -145,6 +171,53 @@ def test_slack_message_includes_summary_not_bare_reason(monkeypatch):
     assert "Classified as intent 'complaint'" in all_text
     assert "Asked one clarifying question" in all_text
     assert "the thing with my stuff is broken idk what to do" in all_text
+    os.remove(path)
+
+
+def test_slack_message_includes_attachment_link_when_present(monkeypatch):
+    handler, path = _handler(slack_webhook_url="https://hooks.slack.test/fake")
+    captured = {}
+
+    class FakeResponse:
+        def raise_for_status(self):
+            pass
+
+    def _post(url, json, timeout):
+        captured["payload"] = json
+        return FakeResponse()
+
+    monkeypatch.setattr("agent.escalation.requests.post", _post)
+    handler.finalize(
+        query="it arrived damaged", session_id="s1", reason="low_retrieval_relevance",
+        retrieved_context=[], slots={}, attempted_summary="summary", attachment_id="abc-123",
+    )
+    block_texts = [b["text"]["text"] for b in captured["payload"]["blocks"] if "text" in b]
+    all_text = "\n".join(block_texts)
+    assert "abc-123" in all_text
+    assert "Attachment" in all_text
+    os.remove(path)
+
+
+def test_slack_message_omits_attachment_block_when_absent(monkeypatch):
+    handler, path = _handler(slack_webhook_url="https://hooks.slack.test/fake")
+    captured = {}
+
+    class FakeResponse:
+        def raise_for_status(self):
+            pass
+
+    def _post(url, json, timeout):
+        captured["payload"] = json
+        return FakeResponse()
+
+    monkeypatch.setattr("agent.escalation.requests.post", _post)
+    handler.finalize(
+        query="q", session_id="s1", reason="low_intent_confidence",
+        retrieved_context=[], slots={}, attempted_summary="summary",
+    )
+    block_texts = [b["text"]["text"] for b in captured["payload"]["blocks"] if "text" in b]
+    all_text = "\n".join(block_texts)
+    assert "Attachment" not in all_text
     os.remove(path)
 
 
@@ -325,4 +398,90 @@ def test_list_escalations_filters_by_slack_delivered(monkeypatch):
 
     assert len(delivered) == 1 and delivered[0].query == "q1"
     assert len(failed) == 1 and failed[0].query == "q2"
+    os.remove(path)
+
+
+# --- Phase D: live human handoff ----------------------------------------------
+
+
+def test_respond_updates_status_and_reply():
+    handler, path = _handler()
+    packet = handler.finalize(
+        query="q1", session_id="s1", reason="low_intent_confidence",
+        retrieved_context=[], slots={}, attempted_summary="s",
+    )
+    assert packet.human_status == "waiting"
+
+    updated = handler.respond(packet.escalation_id, status="responded", reply="I've looked into this for you.")
+
+    assert updated.human_status == "responded"
+    assert updated.human_reply == "I've looked into this for you."
+    assert updated.responded_at is not None
+    os.remove(path)
+
+
+def test_respond_picked_up_does_not_set_responded_at():
+    handler, path = _handler()
+    packet = handler.finalize(
+        query="q1", session_id="s1", reason="low_intent_confidence",
+        retrieved_context=[], slots={}, attempted_summary="s",
+    )
+    updated = handler.respond(packet.escalation_id, status="picked_up")
+
+    assert updated.human_status == "picked_up"
+    assert updated.human_reply is None
+    assert updated.responded_at is None
+    os.remove(path)
+
+
+def test_respond_unknown_escalation_id_returns_none():
+    handler, path = _handler()
+    assert handler.respond("does-not-exist", status="responded", reply="hi") is None
+    os.remove(path)
+
+
+def test_respond_without_reply_keeps_existing_reply():
+    handler, path = _handler()
+    packet = handler.finalize(
+        query="q1", session_id="s1", reason="low_intent_confidence",
+        retrieved_context=[], slots={}, attempted_summary="s",
+    )
+    handler.respond(packet.escalation_id, status="picked_up")
+    updated = handler.respond(packet.escalation_id, status="responded", reply="final answer")
+
+    assert updated.human_reply == "final answer"
+    os.remove(path)
+
+
+def test_get_status_returns_minimal_view():
+    handler, path = _handler()
+    packet = handler.finalize(
+        query="q1", session_id="s1", reason="low_intent_confidence",
+        retrieved_context=[], slots={}, attempted_summary="s",
+    )
+    handler.respond(packet.escalation_id, status="responded", reply="done")
+
+    status = handler.get_status(packet.escalation_id)
+
+    assert status.escalation_id == packet.escalation_id
+    assert status.human_status == "responded"
+    assert status.human_reply == "done"
+    os.remove(path)
+
+
+def test_get_status_unknown_id_returns_none():
+    handler, path = _handler()
+    assert handler.get_status("does-not-exist") is None
+    os.remove(path)
+
+
+def test_new_escalations_default_to_waiting_status():
+    handler, path = _handler()
+    packet = handler.finalize(
+        query="q1", session_id="s1", reason="low_intent_confidence",
+        retrieved_context=[], slots={}, attempted_summary="s",
+    )
+    assert packet.human_status == "waiting"
+    assert packet.human_reply is None
+    assert packet.responded_at is None
     os.remove(path)
